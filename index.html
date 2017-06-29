@@ -21,6 +21,13 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.1.3/ui-bootstrap-tpls.min.js"></script>
 
   <script>
+  let developmentmode = false;
+  if (location.hostname=='127.0.0.1' || location.hostname=='localhost') {
+    console.debug("Development mode ("+location.hostname+")")
+    developmentmode = true;
+  }
+  </script>
+  <script>
   // Opintopolku / Koodisto Service:
   function getLanguageSpecificValue(fieldArray, fieldName, language) {
     if (fieldArray) {
@@ -49,6 +56,8 @@
   }
   </script>
 
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+  <link rel="stylesheet" href="rapida.css">
   <style>
   #copyarea {
     -webkit-transition: all 0.30s ease-in-out;
@@ -71,7 +80,7 @@
 <div data-ng-app="koodiApp" data-ng-controller="koodiController" class="container-fluid">
   <div class="row">
     <div class="col-xs-8">
-      <h4>Koodistot Opintopolussa</h4>
+      <h3>Koodistot Opintopolussa</h3>
     </div>
     <div class="col-xs-4 text-right">
       <div>
@@ -131,7 +140,7 @@
       <!-- ei uutta row:ta, tai edes col:ia jotta taulukko on sisaruksena kopiointipainikkeelle! uusi div tiputtaa uudeksi riviksi -->
       <table style="width:96%" class="table table-striped table-condensed" id="copyarea">
         <thead>
-          <tr style="background-color:lightblue;">
+          <tr class="color2">
             <th style="width:1%; vertical-align:top;" data-ng-hide="clipcopy">
               <span style="font-size:xx-small;">#</span>
             </th>
@@ -156,17 +165,17 @@
               <span class="fa fa-sort-up" data-ng-if="koodiOrder=='loppu' && (koodiOrderReverse)"></span>
             </th>
           </tr>
-          <tr style="background-color:lightblue;" data-ng-hide="clipcopy">
+          <tr class="color2" data-ng-hide="clipcopy">
             <td data-ng-hide="clipcopy"></td>
-            <td><input type="text" class="form-control input-sm" style="background-color:#eeeeff;" data-ng-model="search['arvo']"></td>
-            <td><input type="text" class="form-control input-sm" style="background-color:#eeeeff;" data-ng-model="search['selite'][kieli]"></td>
-            <td class="hidden-xs"><input type="text" class="form-control input-sm" style="background-color:#eeeeff;" data-ng-model="search['alku']"></td>
-            <td class="hidden-xs"><input type="text" class="form-control input-sm" style="background-color:#eeeeff;" data-ng-model="search['loppu']"></td>
+            <td><input type="text" class="form-control input-sm" data-ng-model="search['arvo']"></td>
+            <td><input type="text" class="form-control input-sm" data-ng-model="search['selite'][kieli]"></td>
+            <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['alku']"></td>
+            <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['loppu']"></td>
           </tr>
         </thead>
         <tbody>
           <tr data-ng-repeat="o in koodit | filter:search | orderBy:koodiOrder:koodiOrderReverse">
-            <td style="background-color:#eeeeee;" data-ng-hide="clipcopy"><span style="font-size:xx-small;">{{$index+1}}</span></td>
+            <td class="color2" data-ng-hide="clipcopy"><span style="font-size:xx-small;">{{$index+1}}</span></td>
             <td>
               {{o.arvo}}
               <a data-ng-href="{{opintopolkuuri}}/codeelement/latest/{{o.koodiUri}}" style="text-decorations:none;" target="_blank"><span style="font-size:0.75em;" class="fa fa-external-link"></span></a>
@@ -196,7 +205,7 @@
     <div class="col-xs-4 text-left">
     </div>
     <div class="col-xs-4 text-center">
-      <span style="font-family:arial; color:#757575;">&copy; Rapida 2017</span>
+      <span class="color3">&copy; Rapida 2017</span>
     </div>
     <div class="col-xs-4 text-right">
     </div>
@@ -441,6 +450,7 @@
         tuotanto: "https://virkailija.opintopolku.fi/koodisto-service/rest"
       };
       $scope.opintopolku = "tuotanto";
+      if (developmentmode) $scope.opintopolku = "testi";
       $scope.opintopolkuuri = $scope.opintopolkuuris[$scope.opintopolku];
       
       resetAll();

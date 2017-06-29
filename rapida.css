@@ -1,0 +1,42 @@
+body {
+  background-color: #0D4059;
+  color: #333333;
+  font-family: Open Sans;
+  font-size: 10pt;
+  line-height: 12pt;
+}
+div {
+  background-color: #FFFFFF;
+}
+
+h1 {
+  color: #136085;
+}
+h2 {
+  color: #AB3E0C;
+}
+h3 {
+  color: #AB3E0C;
+}
+h4 {
+  color: #136085;
+}
+
+.color1 {
+  color: #136085;
+}
+.color2 {
+  color: #F06C30;
+}
+.color3 {
+  color: #333333;
+}
+.color4 {
+  color: #0D4059;
+}
+.color5 {
+  color: #AB3E0C;
+}
+.color6 {
+  color: #FFFFFF;
+}
