@@ -76,10 +76,10 @@
     <div class="col-xs-4 text-right">
       <div>
         <span data-ng-show="!flagshow">
-          <img src="flags-fi-sv-en-2x.png" data-ng-src="{{flags[kieli]}}" width="24" data-ng-click="flagshow=!flagshow" alt="valittu kieli">
+          <img src="" data-ng-src="{{flags[kieli]}}" width="24" data-ng-click="flagshow=!flagshow" alt="valittu kieli">
         </span>
         <span data-ng-show="flagshow" data-ng-repeat="l in ['FI','SV','EN']">
-          <img src="flags-fi-sv-en-2x.png" data-ng-src="{{flags[l]}}" width="24" data-ng-click="$parent.kieli=l; $parent.flagshow=false;" alt="valitse kieli">
+          <img src="" data-ng-src="{{flags[l]}}" width="24" data-ng-click="$parent.kieli=l; $parent.flagshow=false;" alt="valitse kieli">
         </span>
       </div>
     </div>
