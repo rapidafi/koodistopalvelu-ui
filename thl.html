@@ -266,7 +266,7 @@
               $scope.koodistolkm = $scope.koodistot.length;
               // järjestetään lista
               $scope.koodistot.sort(sort_by('selite',false,function(a){return a.toUpperCase()}));
-              if (koodisto && koodisto == kobj.koodistoUri) {
+              if (koodisto && koodisto == robj.id) {
                 $scope.koodistot.selected = obj;
                 $scope.useKoodisto(koodisto);
               }
