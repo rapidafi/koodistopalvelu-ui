@@ -246,11 +246,9 @@
       }
       
       function fetchKoodistot(koodisto) {
-        console.debug("fetchKoodistot",koodisto);
         var uri = $scope.thluri+"?list";
         $http.get(uri).then(function (response){
           angular.forEach(response.data, function(robj,rkey){
-            console.debug(robj);
             var koodisto_onjo = 0;
             for(i in $scope.koodistot){
               var j = $scope.koodistot[i];
@@ -280,7 +278,6 @@
 
       // koodiarvojen hakeva ja asettava funktio
       function fetchKoodit(koodisto) {
-        console.debug("fetchKoodit",koodisto);
         if(!koodisto) return;
         $scope.koodistokoodilkm = 0;
         var uri = $scope.thluri+"?type=json&termSystemId="+koodisto;
