@@ -9,12 +9,10 @@ if ($_GET) {
     if ($_GET['type']=='json') {
       $p_type = 'json';
       $p_showhtml = false;
-      header('Content-Type: application/json; charset=utf-8');
     }
     if ($_GET['type']=='xml') {
       $p_type = 'xml';
       $p_showhtml = false;
-      header('Content-Type: text/xml; charset=utf-8');
     }
   }
 
@@ -25,12 +23,36 @@ if ($_GET) {
     $p_list = true;
     $p_type = "json";
     $p_showhtml = false;
-    header('Content-Type: application/json; charset=utf-8');
   }
 }
 
+// alternatively get more api like from URI, e.g. .../[self].php/[codeset]/[code]
+// no special handling for both, so order matters here
+if (isset($_SERVER['PATH_INFO'])) {
+  $p_type = 'json';
+  $p_showhtml = false;
+  $request = array();
+  $request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
+  $p_termSystemId = preg_replace('/[^a-z0-9_.]+/i','',array_shift($request));
+}
+
+switch ($p_type) {
+  case 'json':
+    header('Content-Type: application/json; charset=utf-8');
+    break;
+  case 'xml':
+    header('Content-Type: text/xml; charset=utf-8');
+    break;
+  case 'html':
+    header('Content-Type: text/html; charset=utf-8');
+    break;
+  default:
+    $p_type = 'html';
+    header('Content-Type: text/html; charset=utf-8');
+    break;
+}
+
 if ($p_showhtml) {
-header('Content-Type: text/html; charset=utf-8');
 ?><!DOCTYPE html>
 <html>
 <head>
