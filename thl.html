@@ -80,7 +80,7 @@
   </div>
   <div class="row">
     <div class="col-xs-12">
-      <div class="hidden-xs col-xs-1" id="copyon">
+      <div class="col-sm-1 hidden-xs" id="copyon">
         <button class="clip" data-clipboard-target="#copyarea"
           data-popover-trigger="'mouseenter'" data-popover-placement="right" data-uib-popover="Kopioi taulukko leikepöydälle"
           data-tooltip-trigger="'focus'" data-tooltip-placement="top" data-uib-tooltip="Kopioitu!"
@@ -88,7 +88,7 @@
           <span class="glyphicon glyphicon-copy"></span>
         </button>
       </div>
-      <div class="col-xs-11">
+      <div class="col-sm-11 hidden-xs">
         <input type="text" id="copyuri" value="{{baseuri}}{{query}}{{toURIParam(search)}}" class="col-xs-9 col-lg-8">
         <button class="clip" data-clipboard-target="#copyuri"
           data-popover-trigger="'mouseenter'" data-popover-placement="right" data-uib-popover="Kopioi URI"
@@ -353,7 +353,7 @@
       //
       
       $scope.baseuri = location.origin+location.pathname;
-      $scope.thluri = "//koodistopalvelu.fi/thl.php";
+      $scope.thluri = "https://koodistopalvelu.fi/thl.php";
       
       resetAll();
       
