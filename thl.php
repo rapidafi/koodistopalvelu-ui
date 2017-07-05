@@ -2,7 +2,6 @@
 // parametrit / argumentit
 $p_type = "html";
 $p_showhtml = true;
-$p_termSystemId = '1.2.246.537.5.1'; // sukupuoli-koodisto
 $p_list = false;
 if ($_GET) {
   if(isset($_GET['type'])) {
@@ -16,13 +15,19 @@ if ($_GET) {
     }
   }
 
-  if (isset($_GET['termSystemId'])) {
-    $p_termSystemId = $_GET['termSystemId'];
-  }
   if (isset($_GET['list'])) {
     $p_list = true;
     $p_type = "json";
     $p_showhtml = false;
+  }
+
+  if (isset($_GET['codeset']) && $_GET['codeset']) {
+    $p_codeset = $_GET['codeset'];
+  }
+  // not supported by THL codeserver but for generalization we'll provide this
+  // nb! for type json only!
+  if (isset($_GET['code'])) {
+    $p_code = $_GET['code'];
   }
 }
 
@@ -33,7 +38,8 @@ if (isset($_SERVER['PATH_INFO'])) {
   $p_showhtml = false;
   $request = array();
   $request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
-  $p_termSystemId = preg_replace('/[^a-z0-9_.]+/i','',array_shift($request));
+  $p_codeset = preg_replace('/[^a-z0-9_.]+/i','',array_shift($request));
+  $p_code = array_shift($request);
 }
 
 switch ($p_type) {
@@ -90,60 +96,63 @@ if ($p_showhtml) {
 <h4>Valitse koodisto</h4>
 </td>
 <td>
-<select name="termSystemId" onchange="">
+<select name="codeset" onchange="">
+  <option></option>
 <?php
 } // showhtml
 
-// get list of all code systems
-define("codeservice_wsdl","http://91.202.112.142/codeserver/ws/services/CodeserviceService?wsdl");
-$wsdl = new SoapClient(codeservice_wsdl, array("trace"=>1));
-$wsdl->__setLocation("http://91.202.112.142/codeserver/ws/services/CodeserviceService");
+if ($p_showhtml || $p_list) {
+  // get list of all code systems
+  define("codeservice_wsdl","http://91.202.112.142/codeserver/ws/services/CodeserviceService?wsdl");
+  $wsdl = new SoapClient(codeservice_wsdl, array("trace"=>1));
+  $wsdl->__setLocation("http://91.202.112.142/codeserver/ws/services/CodeserviceService");
 
-$result = $wsdl->GetSupportedCodeSystems();
+  $result = $wsdl->GetSupportedCodeSystems();
 
-$xml = simplexml_load_string($wsdl->__getLastResponse());
-// "Pretty print": http://stackoverflow.com/questions/8615422/php-xml-how-to-output-nice-format
-$dom = new DOMDocument('1.0');
-$dom->preserveWhiteSpace = false;
-$dom->formatOutput = true;
-$dom->loadXML($xml->asXML());
-if ($p_showhtml) {
-  foreach ($dom->getElementsByTagName('termSystem') as $entry) {
-    echo '<option value="'.$entry->getAttribute('id').'" ';
-    if ($p_termSystemId==$entry->getAttribute('id')) {
-      echo 'selected="selected"';
-    }
-    echo '>'.$entry->nodeValue.'</option>'.PHP_EOL;
-  }
-}
-if ($p_list) {
-  if ($p_type=='xml' || $p_type=='html') {
-    $str = $dom->saveXML();
-    if ($p_showhtml) {
-      echo htmlentities($str);
-    } else {
-      echo $str;
-    }
-  }
-  if ($p_type=='json') {
-    //var_dump(json_encode($xml->asXML()));
-    $tojson = array();
+  $xml = simplexml_load_string($wsdl->__getLastResponse());
+  // "Pretty print": http://stackoverflow.com/questions/8615422/php-xml-how-to-output-nice-format
+  $dom = new DOMDocument('1.0');
+  $dom->preserveWhiteSpace = false;
+  $dom->formatOutput = true;
+  $dom->loadXML($xml->asXML());
+  if ($p_showhtml) {
     foreach ($dom->getElementsByTagName('termSystem') as $entry) {
-      //var_dump($entry);
-      $tojson_item = array('id' => $entry->getAttribute('id'), 'name' => $entry->nodeValue);
-      array_push($tojson, $tojson_item);
+      echo '<option value="'.$entry->getAttribute('id').'" ';
+      if (isset($p_codeset) && $p_codeset==$entry->getAttribute('id')) {
+        echo 'selected="selected"';
+      }
+      echo '>'.$entry->nodeValue.'</option>'.PHP_EOL;
     }
-    //var_dump($json);
-    echo json_encode($tojson);
   }
-}
+  if ($p_list) {
+    if ($p_type=='xml' || $p_type=='html') {
+      $str = $dom->saveXML();
+      if ($p_showhtml) {
+        echo htmlentities($str);
+      } else {
+        echo $str;
+      }
+    }
+    if ($p_type=='json') {
+      //var_dump(json_encode($xml->asXML()));
+      $tojson = array();
+      foreach ($dom->getElementsByTagName('termSystem') as $entry) {
+        //var_dump($entry);
+        $tojson_item = array('id' => $entry->getAttribute('id'), 'name' => $entry->nodeValue);
+        array_push($tojson, $tojson_item);
+      }
+      //var_dump($json);
+      echo json_encode($tojson);
+    }
+  }
+} // showhtml or list
 
 if ($p_showhtml) {
 ?>
 </select>
 </td>
 <tr>
-    <td><input type="submit" value="Lähetä"></td>
+  <td><input type="submit" value="Lähetä"></td>
 </tr>
 </table>
 </form>
@@ -156,14 +165,15 @@ if ($p_showhtml) {
 <pre>
 <?php
 } // showhtml
+
 if (!$p_list) {
   // now switch to codeset WS, regardless of mode (type), not in list mode though
   define("codeset_wsdl","http://91.202.112.142/codeserver/ws/services/CodesetService?wsdl");
   $wsdl = new SoapClient(codeset_wsdl, array("trace"=>1));
   $wsdl->__setLocation("http://91.202.112.142/codeserver/ws/services/CodesetService");
 
-  if (isset($p_termSystemId)) {
-    $termSystem = array('_' => null, 'id' => $p_termSystemId);
+  if (isset($p_codeset)) {
+    $termSystem = array('_' => null, 'id' => $p_codeset);
     $Hakuehdot = array('termSystem' => $termSystem);
     $result = $wsdl->ListCodes($Hakuehdot);
     //echo htmlentities(str_replace("><", ">\n<", $wsdl->__getLastResponse()));
@@ -184,32 +194,37 @@ if (!$p_list) {
     }
     if ($p_type=='json') {
       //var_dump(json_encode($xml->asXML()));
+      //*
       $tojson = array();
       foreach ($dom->getElementsByTagName('termItemEntry') as $entry) {
         //var_dump($entry);
-        $tojson_item = array('id' => $entry->getAttribute('id'));
-        foreach ($entry->getElementsByTagName('attribute') as $attr) {
-          // todo choose fields? for example:
-          // - shortname, longname, description, abbreviation
-          // - begindate, expirationdate
-          // - oid, parentid, hierarchylevel, status
-          // - (and those other lang fields?)
-          // basically not:
-          // - createddate, lastmodifieddate, lastmodifiedby
-          //if ($attr->getAttribute('type')=="shortname") {
-          //  $tojson_item['shortname'] = $attr->nodeValue;
-          //}
-          if (!in_array($attr->getAttribute('type'),array("createddate", "lastmodifieddate", "lastmodifiedby"))) {
-            // todo language?
-            if ($attr->getAttribute('language')=="fi") {
-              $tojson_item[$attr->getAttribute('type')] = $attr->nodeValue;
+        // we'll loop all fields so we can make json and drop some not needed fields at the same price
+        if (!isset($p_code) || (isset($p_code) && $p_code==$entry->getAttribute('id'))) {
+          $tojson_item = array('id' => $entry->getAttribute('id'));
+          foreach ($entry->getElementsByTagName('attribute') as $attr) {
+            // todo choose fields? for example:
+            // - shortname, longname, description, abbreviation
+            // - begindate, expirationdate
+            // - oid, parentid, hierarchylevel, status
+            // - (and those other lang fields?)
+            // basically not:
+            // - createddate, lastmodifieddate, lastmodifiedby
+            //if ($attr->getAttribute('type')=="shortname") {
+            //  $tojson_item['shortname'] = $attr->nodeValue;
+            //}
+            if (!in_array($attr->getAttribute('type'),array("createddate", "lastmodifieddate", "lastmodifiedby"))) {
+              // todo language?
+              if ($attr->getAttribute('language')=="fi") {
+                $tojson_item[$attr->getAttribute('type')] = $attr->nodeValue;
+              }
             }
           }
+          array_push($tojson, $tojson_item);
         }
-        array_push($tojson, $tojson_item);
       }
       //var_dump($json);
       echo json_encode($tojson);
+      //*/
     }
   }
 } // !list

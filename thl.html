@@ -269,7 +269,7 @@
       function fetchKoodit(koodisto) {
         if(!koodisto) return;
         $scope.koodistokoodilkm = 0;
-        var uri = $scope.thluri+"?type=json&termSystemId="+koodisto;
+        var uri = $scope.thluri+"?type=json&codeset="+koodisto;
         $http.get(uri).then(function (response){
           // muutetaan arvot numeroiksi, mikäli *kaikki* arvot on sopivia
           var onkoarvonumero = true;
