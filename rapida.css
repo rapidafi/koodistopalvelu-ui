@@ -25,18 +25,36 @@ h4 {
 .color1 {
   color: #136085;
 }
+.bgcolor1 {
+  background-color: #136085;
+}
 .color2 {
   color: #F06C30;
+}
+.bgcolor2 {
+  background-color: #F06C30;
 }
 .color3 {
   color: #333333;
 }
+.bgcolor3 {
+  background-color: #333333;
+}
 .color4 {
   color: #0D4059;
+}
+.bgcolor4 {
+  background-color: #0D4059;
 }
 .color5 {
   color: #AB3E0C;
 }
+.bgcolor5 {
+  background-color: #AB3E0C;
+}
 .color6 {
   color: #FFFFFF;
+}
+.bgcolor6 {
+  background-color: #FFFFFF;
 }
