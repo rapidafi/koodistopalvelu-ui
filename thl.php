@@ -43,7 +43,9 @@ header('Content-Type: text/html; charset=utf-8');
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+<link rel="stylesheet" href="rapida.css">
 
 <script type="text/javascript">
    function toggle_visibility(id) {
@@ -55,15 +57,12 @@ header('Content-Type: text/html; charset=utf-8');
    }
 </script>
 
-<title>thl-soap</title>
+<title>proxy for thl codeserver</title>
 </head>
 <body class="container-fluid">
 
 <div class="row">
 <div class="col-xs-12">
-<hr>
-
-<h3>Kokeile rajapintakutsua</h3>
 
 <form>
 <table>
@@ -219,6 +218,12 @@ var_dump($wsdl->__getTypes());
 ?></pre>
 </div>
 </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-xs-12 text-center">
+<span class="color3">&copy; <a href="//rapida.fi">Rapida</a> 2017</span>
 </div>
 </div>
 
