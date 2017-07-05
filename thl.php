@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
-error_reporting(E_ALL);
-
 // parametrit / argumentit
 $p_type = "html";
 $p_showhtml = true;

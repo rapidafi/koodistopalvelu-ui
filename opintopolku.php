@@ -1,11 +1,7 @@
 <?php
-ini_set('display_errors', 'On');
-error_reporting(E_ALL);
-
 // parametrit / argumentit
 $p_type = "html";
 $p_showhtml = true;
-$p_term = 'sukupuoli'; // sukupuoli-koodisto
 $p_list = false;
 if ($_GET) {
   if(isset($_GET['type'])) {
@@ -21,14 +17,18 @@ if ($_GET) {
     }
   }
 
-  if (isset($_GET['term'])) {
-    $p_term = $_GET['term'];
-  }
   if (isset($_GET['list'])) {
     $p_list = true;
     $p_type = "json";
     $p_showhtml = false;
     header('Content-Type: application/json; charset=utf-8');
+  }
+
+  if (isset($_GET['codeset'])) {
+    $p_codeset = $_GET['codeset'];
+  }
+  if (isset($_GET['code'])) {
+    $p_code = $_GET['code'];
   }
 }
 
@@ -61,48 +61,38 @@ header('Content-Type: text/html; charset=utf-8');
 <h4>Valitse koodisto</h4>
 </td>
 <td>
-<select name="term" onchange="">
+<select name="codeset" onchange="">
 <?php
 } // showhtml
 
-$json = file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/json");
-$array = json_decode($json, true);
+if ($p_showhtml || $p_list) {
+  $json = file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/json");
+  $array = json_decode($json, true);
 
-foreach ($array as $entry) {
-  if ($entry['id']==0) {
-    if ($p_showhtml) {
-      foreach ($entry['koodistos'] as $i => $item) {
-        echo '<option value="'.$item['koodistoUri'].'" ';
-        if ($p_term==$item['koodistoUri']) {
-          echo 'selected="selected"';
-        }
-        foreach ($item['latestKoodistoVersio']['metadata'] as $meta) {
-          if ($meta['kieli']=='FI') {
-            echo '>'.$meta['nimi'].'</option>'.PHP_EOL;
+  foreach ($array as $entry) {
+    if ($entry['id']==0) {
+      if ($p_showhtml) {
+        foreach ($entry['koodistos'] as $i => $item) {
+          echo '<option value="'.$item['koodistoUri'].'" ';
+          if (isset($p_codeset) && $p_codeset==$item['koodistoUri']) {
+            echo 'selected="selected"';
+          }
+          foreach ($item['latestKoodistoVersio']['metadata'] as $meta) {
+            if ($meta['kieli']=='FI') {
+              echo '>'.$meta['nimi'].'</option>'.PHP_EOL;
+            }
           }
         }
       }
-    }
-    if ($p_list) {
-      /*
-      if ($p_type=='xml' || $p_type=='html') {
-        $xml = new SimpleXMLElement('<root/>');
-        array_walk_recursive($array, array ($xml, 'addChild'));
-        $str = $xml->asXML();
-        if ($p_showhtml) {
-          echo htmlentities($str);
-        } else {
-          echo $str;
+      if ($p_list) {
+        // list is for json type only but check anyway
+        if ($p_type=='json') {
+          echo json_encode($entry['koodistos']);
         }
-      }
-      */
-      if ($p_type=='json') {
-        //var_dump($entry);
-        echo json_encode($entry['koodistos']);
       }
     }
   }
-}
+} // showhtml or list
 
 if ($p_showhtml) {
 ?>
@@ -125,12 +115,20 @@ if ($p_showhtml) {
 
 if (!$p_list) {
   // now switch to codeset, regardless of mode (type), not in list mode though
-  if (isset($p_term)) {
+  if (isset($p_codeset)) {
     if ($p_type=='json') {
-      echo file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_term."/koodi");
+      if (isset($p_code)) {
+        echo file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi/arvo/".$p_code);
+      } else {
+        echo file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi");
+      }
     }
     else {
-      $str = file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/".$p_term."/koodi");
+      if (isset($p_code)) {
+        $str = file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi/arvo/".$p_code);
+      } else {
+        $str = file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi");
+      }
       if ($p_showhtml) {
         $xml = simplexml_load_string($str);
         $dom = new DOMDocument('1.0');
