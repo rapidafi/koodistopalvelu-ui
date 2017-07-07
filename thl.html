@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-ng-app="koodiApp" data-ng-controller="koodiController">
 <head>
   <!-- bootstrap :: the  first 3 must be first -->
   <meta charset="utf-8">
@@ -20,14 +20,6 @@
   <!-- angular-ui-bootstrap (tooltip, popover)-->
   <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.1.3/ui-bootstrap-tpls.min.js"></script>
 
-  <script>
-  let developmentmode = false;
-  if (location.hostname=='127.0.0.1' || location.hostname=='localhost') {
-    console.debug("Development mode ("+location.hostname+")")
-    developmentmode = true;
-  }
-  </script>
-
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
   <link rel="stylesheet" href="rapida.css">
   <style>
@@ -46,333 +38,332 @@
   </style>
 
   <title>Koodistot</title>
-</head>
-<body>
 
-<div data-ng-app="koodiApp" data-ng-controller="koodiController" class="container-fluid">
-  <div class="row">
-    <div class="col-xs-8">
-      <h3>Koodistot Kela/THL</h3>
-      <p>
-      <a href="http://www.thl.fi/koodistopalvelu">Lähde</a>,
-      <a href="http://koodistopalvelu.kanta.fi/codeserver/ws">tekninen lähde</a>
-      </p>
-    </div>
-    <div class="col-xs-4 text-right">
-    </div>
-  </div>
-  <div class="row form-group">
-    <div class="col-xs-12 col-md-7">
-      <form>
-        <ui-select data-ng-model="koodistot.selected" on-select="useKoodisto($select.selected.arvo)"
-                   theme="bootstrap" style="min-width: 300px; max-width: 100%;">
-          <ui-select-match class="ui-select-match" placeholder="Etsi koodistoa">
-            {{ $select.selected.selite }}
-            <span class="fa fa-spinner fa-spin" data-ng-show="koodistoLataa"></span>
-          </ui-select-match>
-          <ui-select-choices repeat="o in koodistot | filter: $select.search">
-            {{ o.selite }}
-          </ui-select-choices>
-        </ui-select>
-      </form>
-    </div>
-    <div class="hidden-xs col-xs-12 col-md-5">
-      Koodistoja {{koodistolkm}} kpl (<a data-ng-click="fetchKoodistot()">lataa uudelleen</a>)
-      <br>
-      Valittu koodisto: koodien lkm={{koodistokoodilkm}} koodiarvot {{koodistoonkonumero}}
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="col-sm-1 hidden-xs" id="copyon">
-        <button class="clip" data-clipboard-target="#copyarea"
-          data-popover-trigger="'mouseenter'" data-popover-placement="right" data-uib-popover="Kopioi taulukko leikepöydälle"
-          data-tooltip-trigger="'focus'" data-tooltip-placement="top" data-uib-tooltip="Kopioitu!"
-          data-ng-click="clipcopy=true" data-ng-mouseleave="clipcopy=false">
-          <span class="glyphicon glyphicon-copy"></span>
-        </button>
-      </div>
-      <div class="col-sm-11 hidden-xs">
-        <input type="text" id="copyuri" value="{{baseuri}}{{query}}{{toURIParam(search)}}" class="col-xs-9 col-lg-8">
-        <button class="clip" data-clipboard-target="#copyuri"
-          data-popover-trigger="'mouseenter'" data-popover-placement="right" data-uib-popover="Kopioi URI"
-          data-tooltip-trigger="'focus'" data-tooltip-placement="top" data-uib-tooltip="Kopioitu!" data-tooltip-popup-close-delay="900">
-          <span class="glyphicon glyphicon-copy"></span>
-        </button>
-        <a href="#" data-ng-href="{{baseuri}}{{query}}{{toURIParam(search)}}"><span class="fa fa-external-link"></span></a>
-      </div>
-      <!-- ei uutta row:ta, tai edes col:ia jotta taulukko on sisaruksena kopiointipainikkeelle! uusi div tiputtaa uudeksi riviksi -->
-      <table style="width:96%" class="table table-striped table-condensed" id="copyarea">
-        <thead>
-          <tr class="color2">
-            <th style="width:1%; vertical-align:top;" data-ng-hide="clipcopy">
-              <span style="font-size:xx-small;">#</span>
-            </th>
-            <th style="width:19%" data-ng-click="koodiOrderReverse=!(koodiOrder=='arvo'?koodiOrderReverse:true); koodiOrder='arvo'">
-              Koodi
-              <span class="fa fa-sort-down" data-ng-if="koodiOrder=='arvo' && !(koodiOrderReverse)"></span>
-              <span class="fa fa-sort-up" data-ng-if="koodiOrder=='arvo' && (koodiOrderReverse)"></span>
-            </th>
-            <th style="width:50%" data-ng-click="koodiOrderReverse=!(koodiOrder=='selite'?koodiOrderReverse:true); koodiOrder='selite'">
-              Selite
-              <span class="fa fa-sort-down" data-ng-if="koodiOrder=='selite' && !(koodiOrderReverse)"></span>
-              <span class="fa fa-sort-up" data-ng-if="koodiOrder=='selite' && (koodiOrderReverse)"></span>
-            </th>
-            <th style="width:15%" class="hidden-xs" data-ng-click="koodiOrderReverse=!(koodiOrder=='alku'?koodiOrderReverse:true); koodiOrder='alku'">
-              Alku
-              <span class="fa fa-sort-down" data-ng-if="koodiOrder=='alku' && !(koodiOrderReverse)"></span>
-              <span class="fa fa-sort-up" data-ng-if="koodiOrder=='alku' && (koodiOrderReverse)"></span>
-            </th>
-            <th style="width:15%" class="hidden-xs" data-ng-click="koodiOrderReverse=!(koodiOrder=='loppu'?koodiOrderReverse:true); koodiOrder='loppu'">
-              Loppu
-              <span class="fa fa-sort-down" data-ng-if="koodiOrder=='loppu' && !(koodiOrderReverse)"></span>
-              <span class="fa fa-sort-up" data-ng-if="koodiOrder=='loppu' && (koodiOrderReverse)"></span>
-            </th>
-          </tr>
-          <tr class="color2" data-ng-hide="clipcopy">
-            <td data-ng-hide="clipcopy"></td>
-            <td><input type="text" class="form-control input-sm" data-ng-model="search['arvo']"></td>
-            <td><input type="text" class="form-control input-sm" data-ng-model="search['selite']"></td>
-            <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['alku']"></td>
-            <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['loppu']"></td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr data-ng-repeat="o in koodit | filter:search | orderBy:koodiOrder:koodiOrderReverse">
-            <td class="color2" data-ng-hide="clipcopy"><span style="font-size:xx-small;">{{$index+1}}</span></td>
-            <td>{{o.arvo}}</td>
-            <td>{{o.selite}}<span data-ng-hide="clipcopy">
-              <span class="glyphicon glyphicon-info-sign" title="{{o.kuvaus}}" data-ng-show="'{{o.kuvaus}}'!=''"></span>
-            </span></td>
-            <td class="hidden-xs">{{o.alku}}</td>
-            <td class="hidden-xs">{{o.loppu}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="col-xs-12 text-center"><span class="fa fa-cog fa-spin fa-5x" data-ng-show="koodistoLataa"></span></div>
-  </div>
-
-  <div class="row">
-    <div class="col-sm-4 hidden-xs text-left">
-    </div>
-    <div class="col-sm-4 col-xs-12 text-center">
-      <span class="color3">&copy; <a href="//rapida.fi">Rapida</a> 2017</span>
-    </div>
-    <div class="col-sm-4 hidden-xs text-right">
-    </div>
-  </div>
-
-  <script>
-    var clipboard = new Clipboard('.clip');
-    clipboard.on('success', function(e) {
-      e.clearSelection();
-    });
-    clipboard.on('error', function(e) {
-      console.log(e);
-    });
-  </script>
-  <script>
-    // Credits: http://stackoverflow.com/a/979325
-    var sort_by = function(field, reverse, primer){
-      var key = primer ?
-        function(x) {return primer(x[field])} :
-        function(x) {return x[field]};
-      reverse = !reverse ? 1 : -1;
-      return function (a, b) {
-        return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
-      }
+<script>
+  // Credits: http://stackoverflow.com/a/979325
+  var sort_by = function(field, reverse, primer){
+    var key = primer ?
+      function(x) {return primer(x[field])} :
+      function(x) {return x[field]};
+    reverse = !reverse ? 1 : -1;
+    return function (a, b) {
+      return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
     }
-    // Credits: http://stackoverflow.com/a/7075589
-    function findItem(arr, propName, propValue) {
-      for (var i=0; i < arr.length; i++)
-        if (arr[i][propName] == propValue)
-          return arr[i];
-      // will return undefined if not found; you could return a default instead
+  }
+  // Credits: http://stackoverflow.com/a/7075589
+  function findItem(arr, propName, propValue) {
+    for (var i=0; i < arr.length; i++)
+      if (arr[i][propName] == propValue)
+        return arr[i];
+    // will return undefined if not found; you could return a default instead
+  }
+  // Credits: http://stackoverflow.com/a/979995
+  var QueryString = function () {
+    // This function is anonymous, is executed immediately and 
+    // the return value is assigned to QueryString!
+    var query_string = {};
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+      var pair = vars[i].split("=");
+          // If first entry with this name
+      if (typeof query_string[pair[0]] === "undefined") {
+        query_string[pair[0]] = decodeURIComponent(pair[1]);
+          // If second entry with this name
+      } else if (typeof query_string[pair[0]] === "string") {
+        var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+        query_string[pair[0]] = arr;
+          // If third or later entry with this name
+      } else {
+        query_string[pair[0]].push(decodeURIComponent(pair[1]));
+      }
+    } 
+    return query_string;
+  }();
+</script>
+<script>
+  var koodiApp = angular.module('koodiApp', ['ngRoute', 'ui.select', 'ui.bootstrap']);
+  koodiApp.controller('koodiController', function($scope,$http)
+  {
+    //
+    // PRIVAATIT FUNKTIOT
+    //
+    
+    // esim. koodiston (näytettävien koodien) vaihto
+    function reset() {
+      $scope.koodit = [];
+      $scope.koodistokoodilkm = "-";
+      $scope.koodistoLataa = true;
+      $scope.koodistoonkonumero = "-";
     }
-    // Credits: http://stackoverflow.com/a/979995
-    var QueryString = function () {
-      // This function is anonymous, is executed immediately and 
-      // the return value is assigned to QueryString!
-      var query_string = {};
-      var query = window.location.search.substring(1);
-      var vars = query.split("&");
-      for (var i=0;i<vars.length;i++) {
-        var pair = vars[i].split("=");
-            // If first entry with this name
-        if (typeof query_string[pair[0]] === "undefined") {
-          query_string[pair[0]] = decodeURIComponent(pair[1]);
-            // If second entry with this name
-        } else if (typeof query_string[pair[0]] === "string") {
-          var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
-          query_string[pair[0]] = arr;
-            // If third or later entry with this name
-        } else {
-          query_string[pair[0]].push(decodeURIComponent(pair[1]));
-        }
-      } 
-      return query_string;
-    }();
-  </script>
-  <script>
-    var koodiApp = angular.module('koodiApp', ['ngRoute', 'ui.select', 'ui.bootstrap']);
-    koodiApp.controller('koodiController', function($scope,$http)
-    {
-      //
-      // PRIVAATIT FUNKTIOT
-      //
-      
-      // esim. koodiston (näytettävien koodien) vaihto
-      function reset() {
-        $scope.koodit = [];
-        $scope.koodistokoodilkm = "-";
-        $scope.koodistoLataa = true;
-        $scope.koodistoonkonumero = "-";
-      }
-      // aloita alusta (paitsi koodistojen lataus)
-      function resetAll() {
-        $scope.koodistot = [];
-        $scope.koodiOrder = 'arvo';
-        $scope.koodiOrderReverse = false;
-        $scope.query = "";
-        reset();
-      }
-      
-      function fetchKoodistot(koodisto) {
-        var uri = $scope.thluri+"?list";
-        $http.get(uri).then(function (response){
-          angular.forEach(response.data, function(robj,rkey){
-            var koodisto_onjo = 0;
-            for(i in $scope.koodistot){
-              var j = $scope.koodistot[i];
-              if (j.arvo == robj.id){
-                koodisto_onjo = 1;
-                break;
-              }
+    // aloita alusta (paitsi koodistojen lataus)
+    function resetAll() {
+      $scope.koodistot = [];
+      $scope.koodiOrder = 'arvo';
+      $scope.koodiOrderReverse = false;
+      $scope.query = "";
+      reset();
+    }
+    
+    function fetchKoodistot(koodisto) {
+      var uri = $scope.thluri+"?list";
+      $http.get(uri).then(function (response){
+        angular.forEach(response.data, function(robj,rkey){
+          var koodisto_onjo = 0;
+          for(i in $scope.koodistot){
+            var j = $scope.koodistot[i];
+            if (j.arvo == robj.id){
+              koodisto_onjo = 1;
+              break;
             }
-            if(!koodisto_onjo) {
-              var obj={};
-              obj.id = robj.id;
-              obj.selite = robj.name;
-              obj.arvo = robj.id;
-              $scope.koodistot.push(obj); // viedään löytynyt arvo näytille
-              $scope.koodistolkm = $scope.koodistot.length;
-              // järjestetään lista
-              $scope.koodistot.sort(sort_by('selite',false,function(a){return a.toUpperCase()}));
-              if (koodisto && koodisto == robj.id) {
-                $scope.koodistot.selected = obj;
-                $scope.useKoodisto(koodisto);
-              }
-            }
-          });
-          $scope.koodistoLataa = false;
-        });
-      }
-
-      // koodiarvojen hakeva ja asettava funktio
-      function fetchKoodit(koodisto) {
-        if(!koodisto) return;
-        $scope.koodistokoodilkm = 0;
-        var uri = $scope.thluri+"?type=json&codeset="+koodisto;
-        $http.get(uri).then(function (response){
-          // muutetaan arvot numeroiksi, mikäli *kaikki* arvot on sopivia
-          var onkoarvonumero = true;
-          $scope.koodistoonkonumero = "tekstinä";
-          angular.forEach(response.data, function(robj,rkey){
+          }
+          if(!koodisto_onjo) {
             var obj={};
             obj.id = robj.id;
-            obj.selite = robj.shortname;
+            obj.selite = robj.name;
             obj.arvo = robj.id;
-            if (onkoarvonumero) { // yksin ei numero riittää ja ei yritetä enää
-              if (robj.id.match(/^0.+/)) { // etunolla -> ei numero
-                onkoarvonumero = false;
-              } else if (isNaN(parseInt(robj.id))) { // ei numero
-                onkoarvonumero = false;
-              } else if (robj.id.match(/[^0-9]/)) { // ei numero
-                onkoarvonumero = false;
-              }
-            }
-            obj.alku = robj.begindate;
-            obj.loppu = "";
-            obj.kuvaus = robj.description;
-            if (robj.expirationdate) { obj.loppu=robj.expirationdate; }
-            $scope.koodit.push(obj); // viedään löytynyt arvo näytille
-            $scope.koodistokoodilkm++;
-          });
-          if (onkoarvonumero) {
-            $scope.koodistoonkonumero = "numeroina";
-            for(var i=0; i<$scope.koodit.length; i++) {
-              $scope.koodit[i].arvo = parseInt($scope.koodit[i].arvo);
+            $scope.koodistot.push(obj); // viedään löytynyt arvo näytille
+            $scope.koodistolkm = $scope.koodistot.length;
+            // järjestetään lista
+            $scope.koodistot.sort(sort_by('selite',false,function(a){return a.toUpperCase()}));
+            if (koodisto && koodisto == robj.id) {
+              $scope.koodistot.selected = obj;
+              $scope.useKoodisto(koodisto);
             }
           }
-          $scope.koodistoLataa = false;
         });
-      }
-      
-      //
-      // SCOPE
-      //
-      
-      // koodistot:
-      // - selite on valintalistassa näkyvä
-      // - arvo on osa URIa eli koodiston tunniste
-      $scope.fetchKoodistot = function() {
-        resetAll();
-        fetchKoodistot();
-      }
-      
-      $scope.useKoodisto = function(arvo) {
-        if(!arvo) return;
-        var koodisto = arvo;
-        reset();
-        fetchKoodit(koodisto);
-        $scope.query = "?koodisto="+arvo;
-      }
-      
-      $scope.toURIParam = function(data) {
-        if (!data) return "";
-        var ret = Object.keys(data).map(function(k){
-          if (k=='arvo') {
-            return "koodi="+encodeURIComponent(data[k]);
+        $scope.koodistoLataa = false;
+      });
+    }
+
+    // koodiarvojen hakeva ja asettava funktio
+    function fetchKoodit(koodisto) {
+      if(!koodisto) return;
+      $scope.koodistokoodilkm = 0;
+      var uri = $scope.thluri+"?type=json&codeset="+koodisto;
+      $http.get(uri).then(function (response){
+        // muutetaan arvot numeroiksi, mikäli *kaikki* arvot on sopivia
+        var onkoarvonumero = true;
+        $scope.koodistoonkonumero = "tekstinä";
+        angular.forEach(response.data, function(robj,rkey){
+          var obj={};
+          obj.id = robj.id;
+          obj.selite = robj.shortname;
+          obj.arvo = robj.id;
+          if (onkoarvonumero) { // yksin ei numero riittää ja ei yritetä enää
+            if (robj.id.match(/^0.+/)) { // etunolla -> ei numero
+              onkoarvonumero = false;
+            } else if (isNaN(parseInt(robj.id))) { // ei numero
+              onkoarvonumero = false;
+            } else if (robj.id.match(/[^0-9]/)) { // ei numero
+              onkoarvonumero = false;
+            }
           }
-          if (k=='selite') {
-            if (!data[k] || !data[k]) {return "";}
-            return encodeURIComponent(k)+"="+encodeURIComponent(data[k]);
+          obj.alku = robj.begindate;
+          obj.loppu = "";
+          obj.kuvaus = robj.description;
+          if (robj.expirationdate) { obj.loppu=robj.expirationdate; }
+          $scope.koodit.push(obj); // viedään löytynyt arvo näytille
+          $scope.koodistokoodilkm++;
+        });
+        if (onkoarvonumero) {
+          $scope.koodistoonkonumero = "numeroina";
+          for(var i=0; i<$scope.koodit.length; i++) {
+            $scope.koodit[i].arvo = parseInt($scope.koodit[i].arvo);
           }
-        }).join('&');
-        if (ret) ret="&"+ret;
-        return ret;
-      }
-      
-      //
-      // ASETUKSET & ALUSTUS
-      //
-      
-      $scope.baseuri = location.origin+location.pathname;
-      $scope.thluri = "https://koodistopalvelu.fi/thl.php";
-      
+        }
+        $scope.koodistoLataa = false;
+      });
+    }
+    
+    //
+    // SCOPE
+    //
+    
+    // koodistot:
+    // - selite on valintalistassa näkyvä
+    // - arvo on osa URIa eli koodiston tunniste
+    $scope.fetchKoodistot = function() {
       resetAll();
-      
-      if (QueryString.koodisto) {
-        fetchKoodistot(QueryString.koodisto);
-      } else {
-        fetchKoodistot();
-      }
-      $scope.search = {};
-      if (QueryString.arvo) {
-        $scope.search['arvo'] = QueryString.arvo;
-      }
-      if (QueryString.koodi) {
-        $scope.search['arvo'] = QueryString.koodi;
-      }
-      if (QueryString.selite) {
-        $scope.search['selite'] = QueryString.selite;
-      }
-      //$scope.search['alku'] = QueryString.alku;
-      //$scope.search['loppu']  QueryString.loppu;
-      
-    });//-koodiController
-  </script>
-</div><!-- /controller & /koodiApp -->
+      fetchKoodistot();
+    }
+    
+    $scope.useKoodisto = function(arvo) {
+      if(!arvo) return;
+      var koodisto = arvo;
+      reset();
+      fetchKoodit(koodisto);
+      $scope.query = "?koodisto="+arvo;
+    }
+    
+    $scope.toURIParam = function(data) {
+      if (!data) return "";
+      var ret = Object.keys(data).map(function(k){
+        if (k=='arvo') {
+          return "koodi="+encodeURIComponent(data[k]);
+        }
+        if (k=='selite') {
+          if (!data[k] || !data[k]) {return "";}
+          return encodeURIComponent(k)+"="+encodeURIComponent(data[k]);
+        }
+      }).join('&');
+      if (ret) ret="&"+ret;
+      return ret;
+    }
+    
+    //
+    // ASETUKSET & ALUSTUS
+    //
+    
+    $scope.baseuri = location.origin+location.pathname;
+    $scope.thluri = "https://koodistopalvelu.fi/thl.php";
+    
+    resetAll();
+    
+    if (QueryString.koodisto) {
+      fetchKoodistot(QueryString.koodisto);
+    } else {
+      fetchKoodistot();
+    }
+    $scope.search = {};
+    if (QueryString.arvo) {
+      $scope.search['arvo'] = QueryString.arvo;
+    }
+    if (QueryString.koodi) {
+      $scope.search['arvo'] = QueryString.koodi;
+    }
+    if (QueryString.selite) {
+      $scope.search['selite'] = QueryString.selite;
+    }
+    //$scope.search['alku'] = QueryString.alku;
+    //$scope.search['loppu']  QueryString.loppu;
+    
+  });//-koodiController
+</script>
+</head>
+<body class="container-fluid">
+
+<div class="row">
+  <div class="col-xs-8">
+    <h3>Koodistot Kela/THL</h3>
+    <p>
+    <a href="http://www.thl.fi/koodistopalvelu">Lähde</a>,
+    <a href="http://koodistopalvelu.kanta.fi/codeserver/ws">tekninen lähde</a>
+    </p>
+  </div>
+  <div class="col-xs-4 text-right">
+  </div>
+</div>
+<div class="row form-group">
+  <div class="col-xs-12 col-md-7">
+    <form>
+      <ui-select data-ng-model="koodistot.selected" on-select="useKoodisto($select.selected.arvo)"
+                 theme="bootstrap" style="min-width: 300px; max-width: 100%;">
+        <ui-select-match class="ui-select-match" placeholder="Etsi koodistoa">
+          {{ $select.selected.selite }}
+          <span class="fa fa-spinner fa-spin" data-ng-show="koodistoLataa"></span>
+        </ui-select-match>
+        <ui-select-choices repeat="o in koodistot | filter: $select.search">
+          {{ o.selite }}
+        </ui-select-choices>
+      </ui-select>
+    </form>
+  </div>
+  <div class="hidden-xs col-xs-12 col-md-5">
+    Koodistoja {{koodistolkm}} kpl (<a data-ng-click="fetchKoodistot()">lataa uudelleen</a>)
+    <br>
+    Valittu koodisto: koodien lkm={{koodistokoodilkm}} koodiarvot {{koodistoonkonumero}}
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <div class="col-sm-1 hidden-xs" id="copyon">
+      <button class="clip" data-clipboard-target="#copyarea"
+        data-popover-trigger="'mouseenter'" data-popover-placement="right" data-uib-popover="Kopioi taulukko leikepöydälle"
+        data-tooltip-trigger="'focus'" data-tooltip-placement="top" data-uib-tooltip="Kopioitu!"
+        data-ng-click="clipcopy=true" data-ng-mouseleave="clipcopy=false">
+        <span class="glyphicon glyphicon-copy"></span>
+      </button>
+    </div>
+    <div class="col-sm-11 hidden-xs">
+      <input type="text" id="copyuri" value="{{baseuri}}{{query}}{{toURIParam(search)}}" class="col-xs-9 col-lg-8">
+      <button class="clip" data-clipboard-target="#copyuri"
+        data-popover-trigger="'mouseenter'" data-popover-placement="right" data-uib-popover="Kopioi URI"
+        data-tooltip-trigger="'focus'" data-tooltip-placement="top" data-uib-tooltip="Kopioitu!" data-tooltip-popup-close-delay="900">
+        <span class="glyphicon glyphicon-copy"></span>
+      </button>
+      <a href="#" data-ng-href="{{baseuri}}{{query}}{{toURIParam(search)}}"><span class="fa fa-external-link"></span></a>
+    </div>
+    <!-- ei uutta row:ta, tai edes col:ia jotta taulukko on sisaruksena kopiointipainikkeelle! uusi div tiputtaa uudeksi riviksi -->
+    <table style="width:96%" class="table table-striped table-condensed" id="copyarea">
+      <thead>
+        <tr class="color2">
+          <th style="width:1%; vertical-align:top;" data-ng-hide="clipcopy">
+            <span style="font-size:xx-small;">#</span>
+          </th>
+          <th style="width:19%" data-ng-click="koodiOrderReverse=!(koodiOrder=='arvo'?koodiOrderReverse:true); koodiOrder='arvo'">
+            Koodi
+            <span class="fa fa-sort-down" data-ng-if="koodiOrder=='arvo' && !(koodiOrderReverse)"></span>
+            <span class="fa fa-sort-up" data-ng-if="koodiOrder=='arvo' && (koodiOrderReverse)"></span>
+          </th>
+          <th style="width:50%" data-ng-click="koodiOrderReverse=!(koodiOrder=='selite'?koodiOrderReverse:true); koodiOrder='selite'">
+            Selite
+            <span class="fa fa-sort-down" data-ng-if="koodiOrder=='selite' && !(koodiOrderReverse)"></span>
+            <span class="fa fa-sort-up" data-ng-if="koodiOrder=='selite' && (koodiOrderReverse)"></span>
+          </th>
+          <th style="width:15%" class="hidden-xs" data-ng-click="koodiOrderReverse=!(koodiOrder=='alku'?koodiOrderReverse:true); koodiOrder='alku'">
+            Alku
+            <span class="fa fa-sort-down" data-ng-if="koodiOrder=='alku' && !(koodiOrderReverse)"></span>
+            <span class="fa fa-sort-up" data-ng-if="koodiOrder=='alku' && (koodiOrderReverse)"></span>
+          </th>
+          <th style="width:15%" class="hidden-xs" data-ng-click="koodiOrderReverse=!(koodiOrder=='loppu'?koodiOrderReverse:true); koodiOrder='loppu'">
+            Loppu
+            <span class="fa fa-sort-down" data-ng-if="koodiOrder=='loppu' && !(koodiOrderReverse)"></span>
+            <span class="fa fa-sort-up" data-ng-if="koodiOrder=='loppu' && (koodiOrderReverse)"></span>
+          </th>
+        </tr>
+        <tr class="color2" data-ng-hide="clipcopy">
+          <td data-ng-hide="clipcopy"></td>
+          <td><input type="text" class="form-control input-sm" data-ng-model="search['arvo']"></td>
+          <td><input type="text" class="form-control input-sm" data-ng-model="search['selite']"></td>
+          <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['alku']"></td>
+          <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['loppu']"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="o in koodit | filter:search | orderBy:koodiOrder:koodiOrderReverse">
+          <td class="color2" data-ng-hide="clipcopy"><span style="font-size:xx-small;">{{$index+1}}</span></td>
+          <td>{{o.arvo}}</td>
+          <td>{{o.selite}}<span data-ng-hide="clipcopy">
+            <span class="glyphicon glyphicon-info-sign" title="{{o.kuvaus}}" data-ng-show="'{{o.kuvaus}}'!=''"></span>
+          </span></td>
+          <td class="hidden-xs">{{o.alku}}</td>
+          <td class="hidden-xs">{{o.loppu}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-xs-12 text-center"><span class="fa fa-cog fa-spin fa-5x" data-ng-show="koodistoLataa"></span></div>
+</div>
+
+<div class="row">
+  <div class="col-sm-4 hidden-xs text-left">
+  </div>
+  <div class="col-sm-4 col-xs-12 text-center">
+    <span class="color3">&copy; <a href="//rapida.fi">Rapida</a> 2017</span>
+  </div>
+  <div class="col-sm-4 hidden-xs text-right">
+  </div>
+</div>
+
+<script>
+  var clipboard = new Clipboard('.clip');
+  clipboard.on('success', function(e) {
+    e.clearSelection();
+  });
+  clipboard.on('error', function(e) {
+    console.log(e);
+  });
+</script>
 </body>
 </html>
