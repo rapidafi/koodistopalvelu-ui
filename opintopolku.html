@@ -312,6 +312,48 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
     //$scope.search['loppu']  QueryString.loppu;
     
   });//-koodiController
+
+  // Regular Expression filtering
+  koodiApp.filter('regex', function() {
+    return function(input, regex) {
+      if(!regex) return input;
+      // clear empty strings away
+      angular.forEach(regex,function(value,field){
+        if(value=="")
+          delete regex[field];
+      });
+      if(angular.equals({},regex)){//nothing to rule out..
+        return input;//..so return all
+      }
+      // else... start finding matches
+      let out = [];
+      for(let i=0; i<input.length; i++){
+        let addit=true;//see if all patterns give ok
+        angular.forEach(regex,function(value,field){
+          // language selection, key here is field 'selite'!
+          let fortest = input[i][field];
+          if (field=="selite" && Object.keys(value) && Object.keys(value).length>0 && value[Object.keys(value)[0]]) {
+            field = Object.keys(value)[0];
+            value = value[field];
+            fortest = fortest[field];
+          }
+          let patt = new RegExp(/.?/);//match anything until...
+          try { // catch for ex. unfinished patterns causing exceptions
+            patt = new RegExp(value,'i');//...try to use user input
+          } catch(e) {
+            //console.debug("RegExp exception",e)
+          }
+          if(!patt.test(fortest)){//if even one says no..
+            addit=false;//..it's a no!
+          }
+        });
+        if(addit){
+          out.push(input[i]);
+        }
+      }
+      return out;
+    };
+  });
 </script>
 
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
@@ -436,7 +478,7 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
         </tr>
       </thead>
       <tbody>
-        <tr data-ng-repeat="o in koodit | filter:search | orderBy:koodiOrder:koodiOrderReverse">
+        <tr data-ng-repeat="o in koodit | regex:search | orderBy:koodiOrder:koodiOrderReverse">
           <td class="color2" data-ng-hide="clipcopy"><span style="font-size:xx-small;">{{$index+1}}</span></td>
           <td>{{o.arvo}}<span data-ng-hide="clipcopy">
             <a data-ng-href="{{opintopolkuuri}}/codeelement/latest/{{o.koodiUri}}" style="text-decorations:none;" target="_blank"><span style="font-size:0.75em;" class="fa fa-external-link"></span></a>
