@@ -118,7 +118,7 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
     }
     
     function fetchKoodistot(koodisto) {
-      var uri = $scope.opintopolkuuri+"/list"
+      var uri = $scope.opintopolkuuri+"/json";
       $http.get(uri).then(function (response){
         angular.forEach(response.data, function(robj,rkey){
           angular.forEach(robj.koodistos, function(kobj,kkey){
@@ -161,7 +161,8 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
       $scope.koodistoversio = koodistoversio;
       $scope.koodistotila = koodistotila;
       $scope.koodistokoodilkm = 0;
-      var uri = $scope.opintopolkuuri+"/codeelement/latest/"+koodisto;
+      //var uri = opintopolkuuri+"/codeelement/codes/"+koodisto+"/"+koodistoversio;
+      var uri = $scope.opintopolkuuri+"/json/"+koodisto+"/koodi"+"?koodistoVersio="+koodistoversio+"&onlyValidKoodis=false";
       $http.get(uri).then(function (response){
         // muutetaan arvot numeroiksi, mikäli *kaikki* arvot on sopivia
         var onkoarvonumero = true;
@@ -273,8 +274,8 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
     };
     $scope.baseuri = location.origin+location.pathname;
     $scope.opintopolkuuris = {
-      testi: "https://koodistopalvelu.fi/opintopolku.php/testi",
-      tuotanto: "https://koodistopalvelu.fi/opintopolku.php"
+      testi: "https://testi.virkailija.opintopolku.fi/koodisto-service/rest",
+      tuotanto: "https://virkailija.opintopolku.fi/koodisto-service/rest"
     };
     $scope.opintopolku = "tuotanto";
     $scope.opintopolkuuri = $scope.opintopolkuuris[$scope.opintopolku];

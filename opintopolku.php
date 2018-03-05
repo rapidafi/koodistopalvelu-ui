@@ -36,7 +36,7 @@ if ($_GET) {
 
 // alternatively get more api like from URI, e.g. .../[self].php/[codeset]/[code]
 // no special handling for both, so order matters here
-// 2018-03-05: more opintopolku like: .../[self].php/codeset/latest/[codeset]_[code]
+// 2018-03-05: more opintopolku like: .../[self].php/codeelement/latest/[codeset]_[code]
 //   --''--  : also added .../[self].php/json and ..../list for listing
 if (isset($_SERVER['PATH_INFO'])) {
   $p_type = 'json';
@@ -52,10 +52,12 @@ if (isset($_SERVER['PATH_INFO'])) {
     $p_list = true;
   } else {
     $const = array_shift($request);//latest
-    $p_codeset = preg_replace('/[^a-z0-9_]+/i','',array_shift($request));
+    $p_codeset = array_shift($request);
     $codesetcode = explode('_', $p_codeset);
     $p_codeset = $codesetcode[0];
-    $p_code = $codesetcode[1];
+    if (count($codesetcode)>1) {
+      $p_code = $codesetcode[1];
+    }
   }
   //$p_codeset = preg_replace('/[^a-z0-9_]+/i','',array_shift($request));
   //$p_code = array_shift($request);
@@ -157,14 +159,14 @@ if (!$p_list) {
   if (isset($p_codeset)) {
     if ($p_type=='json') {
       if (isset($p_code)) {
-        echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi/arvo/".$p_code);
+        echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi/".$p_codeset."_".$p_code);
       } else {
         echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi");
       }
     }
     else {
       if (isset($p_code)) {
-        $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi/arvo/".$p_code);
+        $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi/".$p_codeset."_".$p_code);
       } else {
         $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi");
       }
