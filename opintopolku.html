@@ -119,6 +119,9 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
     
     function fetchKoodistot(koodisto) {
       var uri = $scope.opintopolkuuri+"/json";
+      if ($scope.opintopolku=='php') {
+        uri = $scope.opintopolkuuri+"?list"
+      }
       $http.get(uri).then(function (response){
         angular.forEach(response.data, function(robj,rkey){
           angular.forEach(robj.koodistos, function(kobj,kkey){
@@ -163,6 +166,9 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
       $scope.koodistokoodilkm = 0;
       //var uri = opintopolkuuri+"/codeelement/codes/"+koodisto+"/"+koodistoversio;
       var uri = $scope.opintopolkuuri+"/json/"+koodisto+"/koodi"+"?koodistoVersio="+koodistoversio+"&onlyValidKoodis=false";
+      if ($scope.opintopolku=='php') {
+        uri = $scope.opintopolkuuri+"?type=json&codeset="+koodisto;
+      }
       $http.get(uri).then(function (response){
         // muutetaan arvot numeroiksi, mikäli *kaikki* arvot on sopivia
         var onkoarvonumero = true;
@@ -275,7 +281,8 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
     $scope.baseuri = location.origin+location.pathname;
     $scope.opintopolkuuris = {
       testi: "https://testi.virkailija.opintopolku.fi/koodisto-service/rest",
-      tuotanto: "https://virkailija.opintopolku.fi/koodisto-service/rest"
+      tuotanto: "https://virkailija.opintopolku.fi/koodisto-service/rest",
+      php: "https://koodistopalvelu.fi/opintopolku.php"
     };
     $scope.opintopolku = "tuotanto";
     $scope.opintopolkuuri = $scope.opintopolkuuris[$scope.opintopolku];
@@ -417,6 +424,7 @@ function getLanguageSpecificValueOrValidValue(fieldArray, fieldName, language) {
     <select data-ng-model="opintopolku" data-ng-change="useOpintopolku(opintopolku)">
       <option value="testi">Testi/QA</option>
       <option value="tuotanto">Tuotanto</option>
+      <option value="php">PHP</option>
     </select>
     <br>
     Valittu koodisto: versio={{koodistoversio}} tila={{koodistotila}} koodien lkm={{koodistokoodilkm}} koodiarvot {{koodistoonkonumero}}

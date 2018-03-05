@@ -3,6 +3,7 @@
 $p_type = "html";
 $p_showhtml = true;
 $p_list = false;
+$p_test = "";
 if ($_GET) {
   if(isset($_GET['type'])) {
     if ($_GET['type']=='json') {
@@ -27,17 +28,37 @@ if ($_GET) {
   if (isset($_GET['code'])) {
     $p_code = $_GET['code'];
   }
+
+  if (isset($_GET['test'])) {
+    $p_test = "testi.";
+  }
 }
 
 // alternatively get more api like from URI, e.g. .../[self].php/[codeset]/[code]
 // no special handling for both, so order matters here
+// 2018-03-05: more opintopolku like: .../[self].php/codeset/latest/[codeset]_[code]
+//   --''--  : also added .../[self].php/json and ..../list for listing
 if (isset($_SERVER['PATH_INFO'])) {
   $p_type = 'json';
   $p_showhtml = false;
   $request = array();
   $request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
-  $p_codeset = preg_replace('/[^a-z0-9_]+/i','',array_shift($request));
-  $p_code = array_shift($request);
+  $const = array_shift($request);//test | list|json | codeelement
+  if ($const=='test') {
+    $p_test = "testi.";
+    $const = array_shift($request);//list|json | codeelement
+  }
+  if ($const=='json' || $const=='list') {
+    $p_list = true;
+  } else {
+    $const = array_shift($request);//latest
+    $p_codeset = preg_replace('/[^a-z0-9_]+/i','',array_shift($request));
+    $codesetcode = explode('_', $p_codeset);
+    $p_codeset = $codesetcode[0];
+    $p_code = $codesetcode[1];
+  }
+  //$p_codeset = preg_replace('/[^a-z0-9_]+/i','',array_shift($request));
+  //$p_code = array_shift($request);
 }
 
 switch ($p_type) {
@@ -88,29 +109,24 @@ if ($p_showhtml) {
 <?php
 } // showhtml
 
-if ($p_showhtml || $p_list) {
-  $json = file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/json");
+if ($p_list) {
+  echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json");
+}
+elseif ($p_showhtml) {
+  $json = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json");
   $array = json_decode($json, true);
 
   foreach ($array as $entry) {
     if ($entry['id']==0) {
-      if ($p_showhtml) {
-        foreach ($entry['koodistos'] as $i => $item) {
-          echo '<option value="'.$item['koodistoUri'].'" ';
-          if (isset($p_codeset) && $p_codeset==$item['koodistoUri']) {
-            echo 'selected="selected"';
-          }
-          foreach ($item['latestKoodistoVersio']['metadata'] as $meta) {
-            if ($meta['kieli']=='FI') {
-              echo '>'.$meta['nimi'].'</option>'.PHP_EOL;
-            }
-          }
+      foreach ($entry['koodistos'] as $i => $item) {
+        echo '<option value="'.$item['koodistoUri'].'" ';
+        if (isset($p_codeset) && $p_codeset==$item['koodistoUri']) {
+          echo 'selected="selected"';
         }
-      }
-      if ($p_list) {
-        // list is for json type only but check anyway
-        if ($p_type=='json') {
-          echo json_encode($entry['koodistos']);
+        foreach ($item['latestKoodistoVersio']['metadata'] as $meta) {
+          if ($meta['kieli']=='FI') {
+            echo '>'.$meta['nimi'].'</option>'.PHP_EOL;
+          }
         }
       }
     }
@@ -141,16 +157,16 @@ if (!$p_list) {
   if (isset($p_codeset)) {
     if ($p_type=='json') {
       if (isset($p_code)) {
-        echo file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi/arvo/".$p_code);
+        echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi/arvo/".$p_code);
       } else {
-        echo file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi");
+        echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi");
       }
     }
     else {
       if (isset($p_code)) {
-        $str = file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi/arvo/".$p_code);
+        $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi/arvo/".$p_code);
       } else {
-        $str = file_get_contents("https://virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi");
+        $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi");
       }
       if ($p_showhtml) {
         $xml = simplexml_load_string($str);
