@@ -77,14 +77,14 @@
       $scope.koodistotila = "-"; // näytettävä arvo (ei vaikuta hakuihin)
       $scope.koodistokoodilkm = "-";
       $scope.koodistoLataa = true;
-      $scope.koodistoonkonumero = "-";
+      $scope.koodistoonkonumero = true;
     }
     // aloita alusta (paitsi koodistojen lataus)
     function resetAll() {
       $scope.koodistot = [];
       $scope.koodiOrder = 'arvo';
       $scope.koodiOrderReverse = false;
-      $scope.kieli = 'fi';
+      $scope.lang = 'fi';
       $scope.query = "";
       reset();
     }
@@ -96,27 +96,36 @@
         //console.debug("fetchKoodistot","response",response)
         angular.forEach(response.data, function(robj,rkey){
           angular.forEach(robj, function(kobj,kkey){
-            var koodisto_onjo = 0;
-            for(i in $scope.koodistot){
-              var j = $scope.koodistot[i];
-              if (j.arvo == kobj.codeValue){
-                koodisto_onjo = 1;
-                break;
+            if (kobj.hasOwnProperty("codeValue")) {
+              var koodisto_onjo = false;
+              for(i in $scope.koodistot){
+                var j = $scope.koodistot[i];
+                if (j.arvo == kobj.codeValue){
+                  koodisto_onjo = true;
+                  break;
+                }
               }
-            }
-            if(!koodisto_onjo) {
-              var obj={};
-              obj.versio = kobj.version;
-              obj.tila = kobj.status;
-              obj.arvo = kobj.codeValue;
-              obj.selite = kobj.prefLabel || {fi: "n/a", sv: "n/a", en: "n/a"};
-              $scope.koodistot.push(obj); // viedään löytynyt arvo näytille
-              $scope.koodistolkm = $scope.koodistot.length;
-              // järjestetään lista
-              $scope.koodistot.sort(sort_by('selite',false,function(a){return a[$scope.kieli].toUpperCase()}));
-              if (koodisto && koodisto == kobj.codeValue) {
-                $scope.koodistot.selected = obj;
-                $scope.useKoodisto(koodisto);
+              if(!koodisto_onjo) {
+                var obj={};
+                obj.arvo = kobj.codeValue;
+                obj.versio = kobj.version;
+                obj.tila = kobj.status;
+                obj.selite = kobj.prefLabel || {'fi':"[n/a]",'sv':"[n/a]",'en':"[n/a]"};
+                if (!obj.selite.fi) obj.selite.fi="[n/a]";
+                if (!obj.selite.sv) obj.selite.sv="[n/a]";
+                if (!obj.selite.en) obj.selite.en="[n/a]";
+                $scope.koodistot.push(obj); // viedään löytynyt arvo näytille
+                $scope.koodistolkm = $scope.koodistot.length;
+                // järjestetään lista
+                $scope.koodistot.sort(sort_by('selite',false,function(a){
+                  if (a.hasOwnProperty($scope.lang))
+                    return a[$scope.lang].toUpperCase()
+                  return null
+                }));
+                if (koodisto && koodisto == kobj.codeValue) {
+                  $scope.koodistot.selected = obj;
+                  $scope.useKoodisto(koodisto);
+                }
               }
             }
           });
@@ -136,47 +145,35 @@
       var uri = $scope.sourceuri+"/"+koodisto+"/codes/";
       $http.get(uri).then(function (response){
         // muutetaan arvot numeroiksi, mikäli *kaikki* arvot on sopivia
-        var onkoarvonumero = true;
-        $scope.koodistoonkonumero = {fi:"teksti",sv:"text",en:"text"};
+        $scope.koodistoonkonumero = true;
         angular.forEach(response.data, function(robj,rkey){
           angular.forEach(robj, function(kobj,kkey){
             if (kobj.hasOwnProperty("codeValue")) {
               var obj={};
-              obj.arvo = kobj.codeValue || 'n/a';
-              if (onkoarvonumero) { // yksin ei numero riittää ja ei yritetä enää
+              obj.arvo = kobj.codeValue;
+              if ($scope.koodistoonkonumero) { // yksikin ei-numero riittää ja ei yritetä enää
                 if (obj.arvo.match(/^0.+/)) { // etunolla -> ei numero
-                  onkoarvonumero = false;
+                  $scope.koodistoonkonumero = false;
                 } else if (isNaN(parseInt(obj.arvo))) { // ei numero
-                  onkoarvonumero = false;
+                  $scope.koodistoonkonumero = false;
                 } else if (obj.arvo.match(/[^0-9]/)) { // ei numero
-                  onkoarvonumero = false;
+                  $scope.koodistoonkonumero = false;
                 }
               }
+              obj.selite = kobj.prefLabel || {'fi':"[n/a]",'sv':"[n/a]",'en':"[n/a]"};
+              if (!obj.selite.fi) obj.selite.fi="[n/a]";
+              if (!obj.selite.sv) obj.selite.sv="[n/a]";
+              if (!obj.selite.en) obj.selite.en="[n/a]";
               obj.alku = kobj.startDate;
               obj.loppu = "";
               obj.koodiUri = kobj.uri;
-              obj.kuvaus = kobj.description || {fi: "n/a", sv: "n/a", en: "n/a"};
+              obj.kuvaus = kobj.description || {'fi':"[n/a]",'sv':"[n/a]",'en':"[n/a]"};
               if (kobj.endDate) { obj.loppu=kobj.endDate; }
-              obj.selite = kobj.prefLabel || {fi: "n/a", sv: "n/a", en: "n/a"};
-              /*
-              if (kobj.hasOwnProperty("prefLabel")) {
-                if (kobj.prefLabel.hasOwnProperty("fi")) {
-                  obj.selite.fi = kobj.prefLabel.fi;
-                }
-                if (kobj.prefLabel.hasOwnProperty("sv")) {
-                  obj.selite.sv = kobj.prefLabel.sv;
-                }
-                if (kobj.prefLabel.hasOwnProperty("en")) {
-                  obj.selite.en = kobj.prefLabel.en;
-                }
-              }
-              //*/
               $scope.koodit.push(obj); // viedään löytynyt arvo näytille
               $scope.koodistokoodilkm++;
             }
           });
-          if (onkoarvonumero) {
-            $scope.koodistoonkonumero = {fi:"numero",sv:"nummer",en:"number"};
+          if ($scope.koodistoonkonumero) {
             for(var i=0; i<$scope.koodit.length; i++) {
               $scope.koodit[i].arvo = parseInt($scope.koodit[i].arvo);
             }
@@ -227,8 +224,8 @@
           return "koodi="+encodeURIComponent(data[k]);
         }
         if (k=='selite') {
-          if (!data[k] || !data[k][$scope.kieli]) {return "";}
-          return encodeURIComponent(k)+"="+encodeURIComponent(data[k][$scope.kieli]);
+          if (!data[k] || !data[k][$scope.lang]) {return "";}
+          return encodeURIComponent(k)+"="+encodeURIComponent(data[k][$scope.lang]);
         }
       }).join('&');
       if (ret) ret="&"+ret;
@@ -248,19 +245,43 @@
     // ASETUKSET & ALUSTUS
     //
     
-    $scope.kieli = 'fi';
+    $scope.lang = 'fi';
     $scope.flags = {
-      fi:"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-finland2x.png",
-      sv:"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-sweden2x.png",
-      en:"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-united-kingdom2x.png"
+      'fi':"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-finland2x.png",
+      'sv':"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-sweden2x.png",
+      'en':"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-united-kingdom2x.png"
     };
     $scope.baseuri = location.origin+location.pathname;
     $scope.sourceuris = {
-      //tuotanto: "https://koodistot.suomi.fi/codelist-api/api/v1/coderegistries/jhs/codeschemes/?format=json"
-      tuotanto: "https://koodistot.suomi.fi/codelist-api/api/v1/coderegistries/jhs/codeschemes"
+      'tuotanto': "https://koodistot.suomi.fi/codelist-api/api/v1/coderegistries/jhs/codeschemes"
     };
     $scope.source = "tuotanto";
     $scope.sourceuri = $scope.sourceuris[$scope.source];
+
+    $scope.i18n = {
+      'codeisnumber':{
+        true:{'fi':'numero','sv':'nummer','en':'number'},
+        false:{'fi':'teksti','sv':'text','en':'text'}
+      },
+      'source':{
+        'text':{'fi':'Lähde','sv':'Källa','en':'Source'}
+      },
+      'form':{
+        'search':{
+          'fi':'Etsi koodistoa',
+          'sv':'Sök för en klassifikation',
+          'en':'Search for codeset'
+        }
+      },
+      'table':{
+        'column':{
+          'code':{'fi':'Koodi','sv':'Kod','en':'Code'},
+          'label':{'fi':'Selite','sv':'Nyckel','en':'Label'},
+          'start':{'fi':'Alku','sv':'Start','en':'Start'},
+          'end':{'fi':'Loppu','sv':'End','en':'End'}
+        }
+      }
+    };
     
     resetAll();
     
@@ -276,8 +297,8 @@
     } else {
       fetchKoodistot();
     }
-    if (QueryString.kieli) {
-      $scope.kieli = QueryString.kieli;
+    if (QueryString.lang) {
+      $scope.lang = QueryString.lang;
     }
     $scope.search = {};
     if (QueryString.arvo) {
@@ -288,7 +309,7 @@
     }
     if (QueryString.selite) {
       $scope.search['selite'] = {};
-      $scope.search['selite'][$scope.kieli] = QueryString.selite;
+      $scope.search['selite'][$scope.lang] = QueryString.selite;
     }
     //$scope.search['alku'] = QueryString.alku;
     //$scope.search['loppu']  QueryString.loppu;
@@ -363,16 +384,16 @@
   <div class="col-xs-8">
     <h3>Koodistot Suomi.fi</h3>
     <p>
-    <a href="https://koodistot.suomi.fi/">Lähde</a>
+    <a href="https://koodistot.suomi.fi/">{{i18n.source.text[lang]}}</a>
     </p>
   </div>
   <div class="col-xs-4 text-right">
     <div>
       <span data-ng-show="!flagshow">
-        <img src="" data-ng-src="{{flags[kieli]}}" width="24" data-ng-click="flagshow=!flagshow" alt="valittu kieli">
+        <img src="" data-ng-src="{{flags[lang]}}" width="24" data-ng-click="flagshow=!flagshow" alt="valittu kieli">
       </span>
       <span data-ng-show="flagshow" data-ng-repeat="l in ['fi','sv','en']">
-        <img src="" data-ng-src="{{flags[l]}}" width="24" data-ng-click="$parent.kieli=l; $parent.flagshow=false;" alt="valitse kieli">
+        <img src="" data-ng-src="{{flags[l]}}" width="24" data-ng-click="$parent.lang=l; $parent.flagshow=false;" alt="valitse kieli">
       </span>
     </div>
   </div>
@@ -383,12 +404,12 @@
     <form>
       <ui-select data-ng-model="koodistot.selected" on-select="useKoodisto($select.selected.arvo)"
                  theme="bootstrap" style="min-width: 300px; max-width: 100%;">
-        <ui-select-match class="ui-select-match" placeholder="Etsi koodistoa">
-          {{ $select.selected.selite[kieli] }}
+        <ui-select-match class="ui-select-match" placeholder="{{i18n.form.search[lang]}}">
+          {{ $select.selected.selite[lang] }}
           <span class="fa fa-spinner fa-spin" data-ng-show="koodistoLataa"></span>
         </ui-select-match>
-        <ui-select-choices repeat="o in koodistot | filter: $select.search">
-          {{ o.selite[kieli] }}
+          <ui-select-choices repeat="o in koodistot | filter: $select.search">
+          {{ o.selite[lang] }}
         </ui-select-choices>
       </ui-select>
     </form>
@@ -400,7 +421,7 @@
       <option value="tuotanto">Tuotanto</option>
     </select>
     <br>
-    Valittu koodisto: versio={{koodistoversio}} tila={{koodistotila}} koodien lkm={{koodistokoodilkm}} koodiarvot {{koodistoonkonumero}}
+    Valittu koodisto: versio={{koodistoversio}} tila={{koodistotila}} koodien lkm={{koodistokoodilkm}} koodiarvot {{i18n.codeisnumber[koodistoonkonumero][lang]}}
     -->
   </div>
 </div>
@@ -415,13 +436,13 @@
       </button>
     </div>
     <div class="col-sm-11 hidden-xs">
-      <input type="text" id="copyuri" value="{{baseuri}}{{query}}{{toURIParam(search)}}{{(query && kieli!='fi')?'&kieli='+kieli:''}}" class="col-xs-9 col-lg-8">
+      <input type="text" id="copyuri" value="{{baseuri}}{{query}}{{toURIParam(search)}}{{(query && lang!='fi')?'&lang='+lang:''}}" class="col-xs-9 col-lg-8">
       <button class="clip" data-clipboard-target="#copyuri"
         data-popover-trigger="'mouseenter'" data-popover-placement="right" data-uib-popover="Kopioi URI"
         data-tooltip-trigger="'focus'" data-tooltip-placement="top" data-uib-tooltip="Kopioitu!" data-tooltip-popup-close-delay="900">
         <span class="glyphicon glyphicon-copy"></span>
       </button>
-      <a href="#" data-ng-href="{{baseuri}}{{query}}{{toURIParam(search)}}{{(query && kieli!='fi')?'&kieli='+kieli:''}}"><span class="fa fa-external-link"></span></a>
+      <a href="#" data-ng-href="{{baseuri}}{{query}}{{toURIParam(search)}}{{(query && lang!='fi')?'&lang='+lang:''}}"><span class="fa fa-external-link"></span></a>
     </div>
     <!-- ei uutta row:ta, tai edes col:ia jotta taulukko on sisaruksena kopiointipainikkeelle! uusi div tiputtaa uudeksi riviksi -->
     <table style="width:96%" class="table table-striped table-condensed" id="copyarea">
@@ -431,22 +452,22 @@
             <span style="font-size:xx-small;">#</span>
           </th>
           <th style="width:19%" data-ng-click="koodiOrderReverse=!(koodiOrder=='arvo'?koodiOrderReverse:true); koodiOrder='arvo'">
-            <span title="{{koodistoonkonumero[kieli]}}">Koodi</span>
+            <span title="{{i18n.codeisnumber[koodistoonkonumero][lang]}}">{{i18n.table.column.code[lang]}}</span>
             <span class="fa fa-sort-down" data-ng-if="koodiOrder=='arvo' && !(koodiOrderReverse)"></span>
             <span class="fa fa-sort-up" data-ng-if="koodiOrder=='arvo' && (koodiOrderReverse)"></span>
           </th>
           <th style="width:50%" data-ng-click="koodiOrderReverse=!(koodiOrder=='selite'?koodiOrderReverse:true); koodiOrder='selite'">
-            Selite
+            {{i18n.table.column.label[lang]}}
             <span class="fa fa-sort-down" data-ng-if="koodiOrder=='selite' && !(koodiOrderReverse)"></span>
             <span class="fa fa-sort-up" data-ng-if="koodiOrder=='selite' && (koodiOrderReverse)"></span>
           </th>
           <th style="width:15%" class="hidden-xs" data-ng-click="koodiOrderReverse=!(koodiOrder=='alku'?koodiOrderReverse:true); koodiOrder='alku'">
-            Alku
+            {{i18n.table.column.start[lang]}}
             <span class="fa fa-sort-down" data-ng-if="koodiOrder=='alku' && !(koodiOrderReverse)"></span>
             <span class="fa fa-sort-up" data-ng-if="koodiOrder=='alku' && (koodiOrderReverse)"></span>
           </th>
           <th style="width:15%" class="hidden-xs" data-ng-click="koodiOrderReverse=!(koodiOrder=='loppu'?koodiOrderReverse:true); koodiOrder='loppu'">
-            Loppu
+            {{i18n.table.column.end[lang]}}
             <span class="fa fa-sort-down" data-ng-if="koodiOrder=='loppu' && !(koodiOrderReverse)"></span>
             <span class="fa fa-sort-up" data-ng-if="koodiOrder=='loppu' && (koodiOrderReverse)"></span>
           </th>
@@ -454,7 +475,7 @@
         <tr class="color2" data-ng-hide="clipcopy">
           <td data-ng-hide="clipcopy"></td>
           <td><input type="text" class="form-control input-sm" data-ng-model="search['arvo']"></td>
-          <td><input type="text" class="form-control input-sm" data-ng-model="search['selite'][kieli]"></td>
+          <td><input type="text" class="form-control input-sm" data-ng-model="search['selite'][lang]"></td>
           <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['alku']"></td>
           <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['loppu']"></td>
         </tr>
@@ -465,8 +486,8 @@
           <td>{{o.arvo}}<span data-ng-hide="clipcopy">
             <a data-ng-href="{{o.koodiUri}}" style="text-decorations:none;" target="_blank"><span style="font-size:0.75em;" class="fa fa-external-link"></span></a>
           </span></td>
-          <td>{{o.selite[kieli]}}<span data-ng-hide="clipcopy">
-            <span class="glyphicon glyphicon-info-sign" title="{{o.kuvaus[kieli]}}" data-ng-show="'{{o.kuvaus[kieli]}}'!=''"></span>
+          <td>{{o.selite[lang]}}<span data-ng-hide="clipcopy">
+            <span class="glyphicon glyphicon-info-sign" title="{{o.kuvaus[lang]}}" data-ng-show="'{{o.kuvaus[lang]}}'!=''"></span>
           </span></td>
           <td class="hidden-xs">{{o.alku}}</td>
           <td class="hidden-xs">{{o.loppu}}</td>
