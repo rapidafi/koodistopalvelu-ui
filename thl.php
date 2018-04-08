@@ -70,7 +70,7 @@ if ($p_showhtml) {
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
-<link rel="stylesheet" href="rapida.css">
+<link rel="stylesheet" href="css/rapida.css">
 
 <script type="text/javascript">
    function toggle_visibility(id) {
