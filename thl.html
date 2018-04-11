@@ -85,7 +85,7 @@
       <a href="#" data-ng-href="{{baseuri}}{{query}}{{toURIParam(search)}}"><span class="fa fa-external-link"></span></a>
     </div>
     <!-- ei uutta row:ta, tai edes col:ia jotta taulukko on sisaruksena kopiointipainikkeelle! uusi div tiputtaa uudeksi riviksi -->
-    <table style="width:96%" class="table table-striped table-condensed" id="copyarea">
+    <span id="copyarea"><table style="width:96%" class="table table-striped table-condensed">
       <thead>
         <tr class="color2">
           <th style="width:1%; vertical-align:top;" data-ng-hide="clipcopy">
@@ -131,7 +131,7 @@
           <td class="hidden-xs">{{o.loppu}}</td>
         </tr>
       </tbody>
-    </table>
+    </table></span>
   </div>
   <div class="col-xs-12 text-center"><span class="fa fa-cog fa-spin fa-5x" data-ng-show="koodistoLataa"></span></div>
 </div>
