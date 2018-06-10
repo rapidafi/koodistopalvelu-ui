@@ -188,7 +188,7 @@ koodiApp.controller('koodiController', function($scope,$http)
   };
   $scope.baseuri = location.origin+location.pathname;
   $scope.sourceuris = {
-    'tuotanto': "https://koodistot.suomi.fi/codelist-api/api/v1/coderegistries/jhs/codeschemes"
+    'tuotanto': "api.php?uri=https://koodistot.suomi.fi/codelist-api/api/v1/coderegistries/jhs/codeschemes"
   };
   $scope.source = "tuotanto";
   $scope.sourceuri = $scope.sourceuris[$scope.source];
