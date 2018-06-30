@@ -8,8 +8,6 @@ koodiApp.controller('koodiController', function($scope,$http)
   // esim. koodiston (näytettävien koodien) vaihto
   function reset() {
     $scope.koodit = [];
-    $scope.koodistoversio = "-"; // näytettävä arvo (ei vaikuta hakuihin)
-    $scope.koodistotila = "-"; // näytettävä arvo (ei vaikuta hakuihin)
     $scope.koodistokoodilkm = "-";
     $scope.koodistoLataa = true;
     $scope.koodistoonkonumero = true;
@@ -43,8 +41,6 @@ koodiApp.controller('koodiController', function($scope,$http)
             if(!koodisto_onjo) {
               var obj={};
               obj.arvo = kobj.codeValue;
-              obj.versio = kobj.version;
-              obj.tila = kobj.status;
               obj.selite = kobj.prefLabel || {'fi':"[n/a]",'sv':"[n/a]",'en':"[n/a]"};
               if (!obj.selite.fi) obj.selite.fi="[n/a]";
               if (!obj.selite.sv) obj.selite.sv="[n/a]";
@@ -70,11 +66,8 @@ koodiApp.controller('koodiController', function($scope,$http)
   }
 
   // koodiarvojen hakeva ja asettava funktio
-  function fetchKoodit(koodisto,koodistoversio,koodistotila) {
+  function fetchKoodit(koodisto) {
     if(!koodisto) return;
-    if(!koodistoversio) return;
-    $scope.koodistoversio = koodistoversio;
-    $scope.koodistotila = koodistotila;
     $scope.koodistokoodilkm = 0;
     //var uri = $scope.sourceuri+"/"+koodisto+"/codes"+"/?format=json";
     var uri = $scope.sourceuri+"/"+koodisto+"/codes/";
@@ -125,7 +118,6 @@ koodiApp.controller('koodiController', function($scope,$http)
   // koodistot:
   // - selite on valintalistassa näkyvä
   // - arvo on osa URIa eli koodiston tunniste opintopolussa
-  // - versio on koodistoversio: 0=haetaan viimeisin, muuten pakottaa version
   $scope.fetchKoodistot = function() {
     resetAll();
     fetchKoodistot();
@@ -134,20 +126,8 @@ koodiApp.controller('koodiController', function($scope,$http)
   $scope.useKoodisto = function(arvo) {
     if(!arvo) return;
     var koodisto = arvo;
-    var versio = findItem($scope.koodistot,"arvo",arvo).versio;
-    var tila = findItem($scope.koodistot,"arvo",arvo).tila;
     reset();
-    //versio; // 0 palauttaa virhetilanteen. ilman koodistoversiota saisi viimeisimmän...
-    if (versio==0) {
-      // haetaan koodiston tiedot, jotta saadaan aito viimeisin koodiston versio
-      var koodistouri = $scope.sourceuri+"/codes/"+koodisto;
-      $http.get(koodistouri).then(function(koodistoresponse) {
-        var data = koodistoresponse.data.latestKoodistoVersio;
-        fetchKoodit(koodisto,data.versio,data.tila);
-      });
-    } else {
-      fetchKoodit(koodisto,versio,tila);
-    }
+    fetchKoodit(koodisto);
     // lisätään myös testi/tuotanto-valitsin
     $scope.query = "?source="+$scope.source+"&koodisto="+arvo;
   }
