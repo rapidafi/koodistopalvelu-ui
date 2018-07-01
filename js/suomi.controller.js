@@ -8,6 +8,8 @@ koodiApp.controller('koodiController', function($scope,$http)
   // esim. koodiston (näytettävien koodien) vaihto
   function reset() {
     $scope.koodit = [];
+    $scope.koodistoversio = "-"; // näytettävä arvo (ei vaikuta hakuihin)
+    $scope.koodistotila = "-"; // näytettävä arvo (ei vaikuta hakuihin)
     $scope.koodistokoodilkm = "-";
     $scope.koodistoLataa = true;
     $scope.koodistoonkonumero = true;
@@ -41,6 +43,8 @@ koodiApp.controller('koodiController', function($scope,$http)
             if(!koodisto_onjo) {
               var obj={};
               obj.arvo = kobj.codeValue;
+              obj.versio = kobj.version;
+              obj.tila = kobj.status;
               obj.selite = kobj.prefLabel || {'fi':"[n/a]",'sv':"[n/a]",'en':"[n/a]"};
               if (!obj.selite.fi) obj.selite.fi="[n/a]";
               if (!obj.selite.sv) obj.selite.sv="[n/a]";
@@ -69,6 +73,8 @@ koodiApp.controller('koodiController', function($scope,$http)
   function fetchKoodit(koodisto) {
     if(!koodisto) return;
     $scope.koodistokoodilkm = 0;
+    $scope.koodistoversio = findItem($scope.koodistot,"arvo",koodisto).versio;
+    $scope.koodistotila = findItem($scope.koodistot,"arvo",koodisto).tila;
     //var uri = $scope.sourceuri+"/"+koodisto+"/codes"+"/?format=json";
     var uri = $scope.sourceuri+"/"+koodisto+"/codes/";
     $http.get(uri).then(function (response){
