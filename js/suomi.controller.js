@@ -166,9 +166,12 @@ koodiApp.controller('koodiController', function($scope,$http)
     'sv':"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-sweden2x.png",
     'en':"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-united-kingdom2x.png"
   };
-  $scope.baseuri = location.origin+location.pathname;
+  $scope.baseuri = (location.origin+location.pathname).replace(/\/[^\/]*$/,'/');
+  if (location.hostname=='localhost') {
+    $scope.baseuri='https://koodistopalvelu.fi/';
+  }
   $scope.sourceuris = {
-    'tuotanto': "api.php?uri=https://koodistot.suomi.fi/codelist-api/api/v1/coderegistries/jhs/codeschemes"
+    'tuotanto': $scope.baseuri+"api.php?uri=https://koodistot.suomi.fi/codelist-api/api/v1/coderegistries/jhs/codeschemes"
   };
   $scope.source = "tuotanto";
   $scope.sourceuri = $scope.sourceuris[$scope.source];

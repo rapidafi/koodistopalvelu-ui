@@ -131,8 +131,11 @@ koodiApp.controller('koodiController', function($scope,$http)
   // ASETUKSET & ALUSTUS
   //
   
-  $scope.baseuri = location.origin+location.pathname;
-  $scope.thluri = "https://koodistopalvelu.fi/thl.php";
+  $scope.baseuri = (location.origin+location.pathname).replace(/\/[^\/]*$/,'/');
+  if (location.hostname=='localhost') {
+    $scope.baseuri='https://koodistopalvelu.fi/';
+  }
+  $scope.thluri = $scope.baseuri+"thl.php";
   
   resetAll();
   

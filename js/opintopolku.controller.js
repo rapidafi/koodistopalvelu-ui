@@ -178,10 +178,13 @@ koodiApp.controller('koodiController', function($scope,$http)
     SV:"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-sweden2x.png",
     EN:"https://cdn3.iconfinder.com/data/icons/142-mini-country-flags-16x16px/32/flag-united-kingdom2x.png"
   };
-  $scope.baseuri = location.origin+location.pathname;
+  $scope.baseuri = (location.origin+location.pathname).replace(/\/[^\/]*$/,'/');
+  if (location.hostname=='localhost') {
+    $scope.baseuri='https://koodistopalvelu.fi/';
+  }
   $scope.opintopolkuuris = {
-    testi: "https://koodistopalvelu.fi/opintopolku.php/testi",
-    tuotanto: "https://koodistopalvelu.fi/opintopolku.php"
+    testi: $scope.baseuri+"opintopolku.php/testi",
+    tuotanto: $scope.baseuri+"opintopolku.php"
   };
   $scope.opintopolku = "tuotanto";
   $scope.opintopolkuuri = $scope.opintopolkuuris[$scope.opintopolku];
