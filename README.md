@@ -1,8 +1,8 @@
 ### Koodistopalvelu UI
 
-User interface for some public APIs providing codesets and classification information.
+User interface for some public APIs providing codesets and classification information. Uses own passthru simple PHP APIs (read only; GET).
 
-Sources for codesets and classifications are:
-- Suomi.fi Koodistot
-- Opintopolku Koodistopalvelu
-- THL Koodistopalvelu
+Original sources for codesets and classifications are:
+- [Suomi.fi Koodistot](https://koodistot.suomi.fi/)
+- [Opintopolku Koodistopalvelu](https://virkailija.opintopolku.fi/koodisto-service/swagger/index.html)
+- [THL Koodistopalvelu](https://thl.fi/fi/web/tiedonhallinta-sosiaali-ja-terveysalalla/koodistopalvelu)
