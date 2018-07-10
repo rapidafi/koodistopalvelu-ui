@@ -67,12 +67,18 @@
   </div>
   <div class="hidden-xs col-xs-12 col-md-5">
     <!--
+    <button type="button" class="btn btn-primary btn-lg bgcolor4 color6" data-ng-click="codesetInfo=!codesetInfo">
+      <span data-ng-hide="codesetInfo" title="Näytä info">&gt;</span>
+      <span data-ng-show="codesetInfo" title="Piilota info">&lt;</span>
+    </button>
+    <span data-ng-show="codesetInfo">
     Koodistoja {{koodistolkm}} kpl (<a data-ng-click="fetchKoodistot()">lataa uudelleen</a>)
     <select data-ng-model="source" data-ng-change="useSource(source)">
       <option value="tuotanto">Tuotanto</option>
     </select>
     <br>
     Valittu koodisto: versio={{koodistoversio}} tila={{koodistotila}} koodien lkm={{koodistokoodilkm}} koodiarvot {{koodistoonkonumero}}
+    </span>
     -->
   </div>
 </div>
