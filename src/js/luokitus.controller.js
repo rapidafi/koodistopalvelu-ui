@@ -52,12 +52,12 @@ koodiApp.controller('koodiController', function($scope,$http)
   $scope.fetchKoodistot = function() {
     console.log("fetchKoodistot")
     $scope.koodistot = [];//pitää olla array
-    let uri = $scope.opintopolkuuri+"/json";
+    var uri = $scope.opintopolkuuri+"/json";
     $http.get(uri).then(function (response){
       angular.forEach(response.data, function(robj,rkey){
         angular.forEach(robj.koodistos, function(kobj,kkey){
           // koodistot saattaa esiintyä useasti koodistoryhmien vuoksi
-          let koodisto_onjo = 0;
+          var koodisto_onjo = 0;
           for(i in $scope.koodistot){
             var j = $scope.koodistot[i];
             if (j.arvo == kobj.koodistoUri){
@@ -89,7 +89,7 @@ koodiApp.controller('koodiController', function($scope,$http)
   function fetchLuokitukset(koodiUri) {
     console.log("fetchLuokitukset")
     if (!(robj.koodisto.koodistoUri in $scope.luokitukset)) {
-      let uri = $scope.opintopolkuuri+"/json/relaatio/sisaltyy-alakoodit/"+koodiUri;
+      var uri = $scope.opintopolkuuri+"/json/relaatio/sisaltyy-alakoodit/"+koodiUri;
       $http.get(uri).then(function (response){
         angular.forEach(response.data, function(robj,rkey){
           var obj={};
@@ -170,15 +170,15 @@ koodiApp.controller('koodiController', function($scope,$http)
     console.log("useKoodisto: "+arvo+" "+versio)
     if(!arvo) return
     reset();
-    let koodisto = arvo;
+    var koodisto = arvo;
     $scope.koodisto = arvo;
     // varaudutaan koodistojen versiotietoihin.
-    let koodistoversio = versio; // 0 palauttaa virhetilanteen. ilman koodistoversiota saisi viimeisimmän...
+    var koodistoversio = versio; // 0 palauttaa virhetilanteen. ilman koodistoversiota saisi viimeisimmän...
     if (koodistoversio==0) {
       // haetaan koodiston tiedot, jotta saadaan aito viimeisin koodiston versio
-      let koodistouri = $scope.opintopolkuuri+"/codes/"+koodisto;
+      var koodistouri = $scope.opintopolkuuri+"/codes/"+koodisto;
       $http.get(koodistouri).then(function(koodistoresponse) {
-        let data = koodistoresponse.data;
+        var data = koodistoresponse.data;
         koodistoversio = data.latestKoodistoVersio.versio;
         fetchKoodit(koodisto,koodistoversio);
       });
@@ -193,7 +193,7 @@ koodiApp.controller('koodiController', function($scope,$http)
     if(!arvo) return;
     if($scope.koodisto=="-") return;
     if(arvo == $scope.koodisto) return;
-    let luokitus = arvo;
+    var luokitus = arvo;
 
     // nollaa luokitus ja luokitusselite
     angular.forEach($scope.koodit,function(kobj,kkey){
@@ -203,7 +203,7 @@ koodiApp.controller('koodiController', function($scope,$http)
       }
     });
     // hae luokitus-koodiston tiedot (koodi arvot ja selitteet)
-    let uri = $scope.opintopolkuuri+"/json/"+luokitus+"/koodi"+"?koodistoVersio="+versio+"&onlyValidKoodis=false";
+    var uri = $scope.opintopolkuuri+"/json/"+luokitus+"/koodi"+"?koodistoVersio="+versio+"&onlyValidKoodis=false";
     $http.get(uri).then(function(response){
       $scope.koodiLuokitus = true; // näytä sarakkeet
       $scope.luokitusLataa = true; // näytä spinneri
@@ -211,13 +211,13 @@ koodiApp.controller('koodiController', function($scope,$http)
       $scope.luokitusladattulkm = 0;
       angular.forEach(response.data, function(lobj,lkey){
         // haetaan luokituksen ylä-/ala-koodit!
-        let relaatiouri = "/json/relaatio/sisaltyy-ylakoodit/";
+        var relaatiouri = "/json/relaatio/sisaltyy-ylakoodit/";
         if ($scope.relaatio=='ala') {
           relaatiouri = "/json/relaatio/sisaltyy-alakoodit/";
         } else if ($scope.relaatio=='sama') {
           relaatiouri = "/json/relaatio/rinnasteinen/";
         }
-        let luri = $scope.opintopolkuuri+relaatiouri+lobj.koodiUri;
+        var luri = $scope.opintopolkuuri+relaatiouri+lobj.koodiUri;
         $http.get(luri).then(function(nextresponse){
           angular.forEach(nextresponse.data, function(robj,rkey){
             // onko oikean koodiston JA LUONNOS-tilainen (kun tulee kaikki versiot mukaan)

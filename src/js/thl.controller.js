@@ -172,12 +172,12 @@ koodiApp.filter('regex', function() {
       return input;//..so return all
     }
     // else... start finding matches
-    let out = [];
-    for(let i=0; i<input.length; i++){
-      let addit=true;//see if all patterns give ok
+    var out = [];
+    for(var i=0; i<input.length; i++){
+      var addit=true;//see if all patterns give ok
       angular.forEach(regex,function(value,field){
         // language selection, key here is field 'selite'!
-        let fortest = input[i][field];
+        var fortest = input[i][field];
         /*
         if (field=="selite" && Object.keys(value) && Object.keys(value).length>0 && value[Object.keys(value)[0]]) {
           field = Object.keys(value)[0];
@@ -185,7 +185,7 @@ koodiApp.filter('regex', function() {
           fortest = fortest[field];
         }
         //*/
-        let patt = new RegExp(/.?/);//match anything until...
+        var patt = new RegExp(/.?/);//match anything until...
         try { // catch for ex. unfinished patterns causing exceptions
           patt = new RegExp(value,'i');//...try to use user input
         } catch(e) {
