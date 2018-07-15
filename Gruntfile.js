@@ -5,6 +5,9 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
 
+  grunt.loadNpmTasks('grunt-google-fonts');
+
+  var srcDir = 'src';
   var distDir = 'dist';
 
   grunt.initConfig({
@@ -16,17 +19,17 @@ module.exports = function (grunt) {
     },
     useminPrepare: {
       html: [
-        'src/index.html',
-        'src/suomi.html',
-        'src/opintopolku.html',
-        'src/thl.html',
+        srcDir+'/index.html',
+        srcDir+'/suomi.html',
+        srcDir+'/opintopolku.html',
+        srcDir+'/thl.html'
       ],
       options: {
         dest: distDir,
         flow: {
           steps: {
-            'css': ['concat'],
-            'js': ['concat']
+            'css': ['concat','cssmin'],
+            'js': ['concat','uglify']
           },
           post: {}
         }
@@ -41,17 +44,9 @@ module.exports = function (grunt) {
       ]
     },
     copy: {
-      demo: {
-        expand: true,
-        cwd: 'src',
-        src: [
-          'demo/*'
-        ],
-        dest: distDir
-      },
       html: {
         expand: true,
-        cwd: 'src',
+        cwd: srcDir,
         src: [
           './*.html'
         ],
@@ -59,35 +54,27 @@ module.exports = function (grunt) {
         options : {
           noProcess: '**/*.{png,gif,jpg,ico,svg,eot,ttf,woff,woff2}',
           process: function (content) {
-            return content.replace(/<!--dev-->.*<!--enddev-->/g, '')
-              .replace(/<!-- mustache/g, '')
-              .replace(/end mustache -->/g, '');
+            return content.replace(/<!-- dev -->.*<!-- enddev -->/g, '')
+              .replace(/<!-- mustache /g, '')
+              .replace(/ end mustache -->/g, '');
           }
         }
       },
       js: {
         expand: true,
-        cwd: 'src',
+        cwd: srcDir,
         src: [
-          'js/*'
+          'js/*.js'
         ],
         dest: distDir
       },
       css: {
         expand: true,
-        cwd: 'src',
+        cwd: srcDir,
         src: [
-          'css/*'
+          'css/*.css'
         ],
         dest: distDir
-      },
-      opensansfonts: {
-        expand: true,
-        cwd: 'node_modules/font-open-sans',
-        src: [
-          './fonts/**'
-        ],
-        dest: distDir+'/css'
       },
       bootstrapfonts: {
         expand: true,
@@ -107,11 +94,28 @@ module.exports = function (grunt) {
       },
       favicon: {
         expand: true,
-        cwd: 'src',
+        cwd: srcDir,
         src: [
           './*.png'
         ],
         dest: distDir
+      }
+    },
+    googlefonts: {
+      dest: {
+        options: {
+          fontPath: distDir+'/fonts/',
+          httpPath: '../fonts/',
+          cssFile: distDir+'/css/fonts.css',
+          fonts: [
+            {
+              family: 'Open Sans',
+              styles: [
+                400, 700
+              ]
+            }
+          ]
+        }
       }
     }
   });
@@ -124,7 +128,10 @@ module.exports = function (grunt) {
     'clean',
     'useminPrepare',
     'concat',
+    'uglify',
+    'cssmin',
     'copy',
+    'googlefonts',
     'usemin'
   ]);
 };
