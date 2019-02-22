@@ -40,4 +40,4 @@ Backend is just a few PHP scripts that pass thru HTTP calls to named original AP
 
 ###### Build & install
 
-TODO
+TODO (this is more like a personal preference thing)
