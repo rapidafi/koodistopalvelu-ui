@@ -22,7 +22,8 @@ module.exports = function (grunt) {
         srcDir+'/index.html',
         srcDir+'/suomi.html',
         srcDir+'/opintopolku.html',
-        srcDir+'/thl.html'
+        srcDir+'/thl.html',
+        srcDir+'/sisu.html'
       ],
       options: {
         dest: distDir,
@@ -40,7 +41,8 @@ module.exports = function (grunt) {
         distDir+'/index.html',
         distDir+'/suomi.html',
         distDir+'/opintopolku.html',
-        distDir+'/thl.html'
+        distDir+'/thl.html',
+        distDir+'/sisu.html'
       ]
     },
     copy: {
