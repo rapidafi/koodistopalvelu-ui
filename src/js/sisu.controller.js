@@ -89,11 +89,7 @@ koodiApp.controller('koodiController', function($scope,$http)
               if (!obj.selite.fi) obj.selite.fi="[n/a]";
               if (!obj.selite.sv) obj.selite.sv="[n/a]";
               if (!obj.selite.en) obj.selite.en="[n/a]";
-              obj.alku = "";
-              obj.loppu = "";
               obj.koodiUri = $scope.sourceuri+"/cached/code/"+kobj.urn;
-              obj.kuvaus = kobj.description || {'fi':"[n/a]",'sv':"[n/a]",'en':"[n/a]"};
-              if (kobj.endDate) { obj.loppu=kobj.endDate; }
               $scope.koodit.push(obj); // viedään löytynyt arvo näytille
             }
           });
@@ -174,6 +170,7 @@ koodiApp.controller('koodiController', function($scope,$http)
   $scope.sourceuri = $scope.sourceuris[$scope.source];
 
   $scope.i18n = {
+    'title':{'fi':'Koodistot Sisussa','sv':'Koduppsättningar i Sisu','en':'Code sets in Sisu'},
     'codeisnumber':{
       true:{'fi':'numero','sv':'nummer','en':'number'},
       false:{'fi':'teksti','sv':'text','en':'text'}
@@ -184,16 +181,14 @@ koodiApp.controller('koodiController', function($scope,$http)
     'form':{
       'search':{
         'fi':'Etsi koodistoa',
-        'sv':'Sök för en klassifikation',
-        'en':'Search for codeset'
+        'sv':'Sök för en koduppsättning',
+        'en':'Search for code set'
       }
     },
     'table':{
       'column':{
         'code':{'fi':'Koodi','sv':'Kod','en':'Code'},
-        'label':{'fi':'Selite','sv':'Nyckel','en':'Label'},
-        'start':{'fi':'Alku','sv':'Start','en':'Start'},
-        'end':{'fi':'Loppu','sv':'End','en':'End'}
+        'label':{'fi':'Selite','sv':'Nyckel','en':'Label'}
       }
     }
   };
@@ -226,8 +221,6 @@ koodiApp.controller('koodiController', function($scope,$http)
     $scope.search['selite'] = {};
     $scope.search['selite'][$scope.lang] = QueryString.selite;
   }
-  //$scope.search['alku'] = QueryString.alku;
-  //$scope.search['loppu']  QueryString.loppu;
   
 });//-koodiController
 

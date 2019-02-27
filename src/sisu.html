@@ -30,15 +30,15 @@
 <script src="js/utils.js"></script>
 <script src="js/sisu.controller.js"></script>
 
-<title>Koodistot</title>
+<title>Koodistopalvelu</title>
 </head>
 <body class="container-fluid">
 
 <div class="row">
   <div class="col-xs-8">
-    <h3>Koodistot Sisussa</h3>
+    <h3 data-ng-bind="i18n.title[lang]"></h3>
     <p>
-    <a href="https://sis-helsinki.funidata.fi/kori/swagger-ui.html#!/code-book-controller/">{{i18n.source.text[lang]}}</a>
+    <a href="https://sis-helsinki.funidata.fi/kori/swagger-ui.html#!/code-book-controller/" data-ng-bind="i18n.source.text[lang]"></a>
     </p>
   </div>
   <div class="col-xs-4 text-right">
@@ -97,33 +97,21 @@
           <th style="width:1%; vertical-align:top;" data-ng-hide="clipcopy">
             <span style="font-size:xx-small;">#</span>
           </th>
-          <th style="width:19%" data-ng-click="koodiOrderReverse=!(koodiOrder=='arvo'?koodiOrderReverse:true); koodiOrder='arvo'">
+          <th style="width:34%" data-ng-click="koodiOrderReverse=!(koodiOrder=='arvo'?koodiOrderReverse:true); koodiOrder='arvo'">
             <span title="{{i18n.codeisnumber[koodistoonkonumero][lang]}}">{{i18n.table.column.code[lang]}}</span>
             <span class="fa fa-sort-down" data-ng-if="koodiOrder=='arvo' && !(koodiOrderReverse)"></span>
             <span class="fa fa-sort-up" data-ng-if="koodiOrder=='arvo' && (koodiOrderReverse)"></span>
           </th>
-          <th style="width:50%" data-ng-click="koodiOrderReverse=!(koodiOrder=='selite'?koodiOrderReverse:true); koodiOrder='selite'">
+          <th style="width:65%" data-ng-click="koodiOrderReverse=!(koodiOrder=='selite'?koodiOrderReverse:true); koodiOrder='selite'">
             {{i18n.table.column.label[lang]}}
             <span class="fa fa-sort-down" data-ng-if="koodiOrder=='selite' && !(koodiOrderReverse)"></span>
             <span class="fa fa-sort-up" data-ng-if="koodiOrder=='selite' && (koodiOrderReverse)"></span>
-          </th>
-          <th style="width:15%" class="hidden-xs" data-ng-click="koodiOrderReverse=!(koodiOrder=='alku'?koodiOrderReverse:true); koodiOrder='alku'">
-            {{i18n.table.column.start[lang]}}
-            <span class="fa fa-sort-down" data-ng-if="koodiOrder=='alku' && !(koodiOrderReverse)"></span>
-            <span class="fa fa-sort-up" data-ng-if="koodiOrder=='alku' && (koodiOrderReverse)"></span>
-          </th>
-          <th style="width:15%" class="hidden-xs" data-ng-click="koodiOrderReverse=!(koodiOrder=='loppu'?koodiOrderReverse:true); koodiOrder='loppu'">
-            {{i18n.table.column.end[lang]}}
-            <span class="fa fa-sort-down" data-ng-if="koodiOrder=='loppu' && !(koodiOrderReverse)"></span>
-            <span class="fa fa-sort-up" data-ng-if="koodiOrder=='loppu' && (koodiOrderReverse)"></span>
           </th>
         </tr>
         <tr class="color2" data-ng-hide="clipcopy">
           <td data-ng-hide="clipcopy"></td>
           <td><input type="text" class="form-control input-sm" data-ng-model="search['arvo']"></td>
           <td><input type="text" class="form-control input-sm" data-ng-model="search['selite'][lang]"></td>
-          <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['alku']"></td>
-          <td class="hidden-xs"><input type="text" class="form-control input-sm" data-ng-model="search['loppu']"></td>
         </tr>
       </thead>
       <tbody>
@@ -132,11 +120,7 @@
           <td>{{o.arvo}}<span data-ng-hide="clipcopy">
             <a data-ng-href="{{o.koodiUri}}" style="text-decorations:none;" target="_blank"><span style="font-size:0.75em;" class="fa fa-external-link"></span></a>
           </span></td>
-          <td>{{o.selite[lang]}}<span data-ng-hide="clipcopy">
-            <span class="glyphicon glyphicon-info-sign" title="{{o.kuvaus[lang]}}" data-ng-show="'{{o.kuvaus[lang]}}'!=''"></span>
-          </span></td>
-          <td class="hidden-xs">{{o.alku}}</td>
-          <td class="hidden-xs">{{o.loppu}}</td>
+          <td>{{o.selite[lang]}}</td>
         </tr>
       </tbody>
     </table></span>
