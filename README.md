@@ -4,8 +4,9 @@ User interface for some public APIs providing codesets and classification inform
 
 Original sources for codesets and classifications are:
 - [Suomi.fi Koodistot](https://koodistot.suomi.fi/)
-- [Opintopolku Koodistopalvelu](https://virkailija.opintopolku.fi/koodisto-service/swagger/index.html)
 - [THL Koodistopalvelu](https://thl.fi/fi/web/tiedonhallinta-sosiaali-ja-terveysalalla/koodistopalvelu)
+- [Opintopolku Koodistopalvelu](https://virkailija.opintopolku.fi/koodisto-service/swagger/index.html)
+- [Sisu/Funidata koodistot](https://sis-demo.funidata.fi/kori/swagger-ui.html#/code-book-controller)
 
 #### Frontend
 
