@@ -117,6 +117,7 @@ koodiApp.controller('koodiController', function($scope,$http)
   }
   
   $scope.useKoodisto = function(arvo) {
+    //console.debug("useKoodisto","arvo",arvo);
     if(!arvo) return;
     var koodisto = arvo;
     reset();
@@ -142,7 +143,7 @@ koodiApp.controller('koodiController', function($scope,$http)
   
   $scope.useSource = function (source) {
     if (source in $scope.sourceuris) {
-      console.log("useSource "+source)
+      //console.debug("useSource","source",source);
       $scope.source = source;
       $scope.sourceuri = $scope.sourceuris[source];
       $scope.fetchKoodistot();
@@ -164,19 +165,26 @@ koodiApp.controller('koodiController', function($scope,$http)
     $scope.baseuri='https://koodistopalvelu.fi/';
   }
   $scope.sourceuris = {
-    'tuotanto': $scope.baseuri+"api.php?uri=https://sis-helsinki.funidata.fi/kori/api"
+    'sis-demo': $scope.baseuri+"api.php?uri=https://sis-helsinki.funidata.fi/kori/api",
+    'sis-helsinki': $scope.baseuri+"api.php?uri=https://sis-helsinki.funidata.fi/kori/api",
+    'sis-aalto': $scope.baseuri+"api.php?uri=https://sis-aalto.funidata.fi/kori/api",
+    'sis-tut': $scope.baseuri+"api.php?uri=https://sis-tut.funidata.fi/kori/api",
+    'sis-jyu': $scope.baseuri+"api.php?uri=https://sis-jyu.funidata.fi/kori/api",
+    'sis-lut': $scope.baseuri+"api.php?uri=https://sis-lut.funidata.fi/kori/api"
   };
-  $scope.source = "tuotanto";
+  $scope.source = "sis-demo";
   $scope.sourceuri = $scope.sourceuris[$scope.source];
 
   $scope.i18n = {
     'title':{'fi':'Koodistot Sisussa','sv':'Koduppsättningar i Sisu','en':'Code sets in Sisu'},
+    'source':{
+      'text':{'fi':'Lähde','sv':'Källa','en':'Source'},
+      'codesets':{'fi':'Koodistoja','sv':'Koduppsättningar','en':'Code sets'},
+      'reload':{'fi':'lataa uudelleen','sv':'ladda om','en':'reload'}
+    },
     'codeisnumber':{
       true:{'fi':'numero','sv':'nummer','en':'number'},
       false:{'fi':'teksti','sv':'text','en':'text'}
-    },
-    'source':{
-      'text':{'fi':'Lähde','sv':'Källa','en':'Source'}
     },
     'form':{
       'search':{

@@ -69,6 +69,11 @@
     </form>
   </div>
   <div class="hidden-xs col-xs-12 col-md-5">
+    <span data-ng-bind="i18n.source.codesets[lang]"></span> <span data-ng-bind="koodistolkm"></span> (<a data-ng-click="fetchKoodistot()" data-ng-bind="i18n.source.reload[lang]"></a>)
+    <select data-ng-model="source"
+      data-ng-options="k as k for (k,v) in sourceuris"
+      data-ng-change="useSource(source)">
+    </select>
   </div>
 </div>
 <div class="row">
