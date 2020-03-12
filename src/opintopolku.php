@@ -111,11 +111,21 @@ if ($p_showhtml) {
 <?php
 } // showhtml
 
+// Caller-Id header
+$request_headers=stream_context_create(
+  array(
+    'http'=>array(
+      'method'=>'GET',
+      'header'=>"Caller-Id: 1.2.246.10.27977962.koodistopalvelu\r\n"
+    )
+  )
+);
+
 if ($p_list) {
-  echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json");
+  echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json", false, $request_headers);
 }
 elseif ($p_showhtml) {
-  $json = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json");
+  $json = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json", false, $request_headers);
   $array = json_decode($json, true);
 
   foreach ($array as $entry) {
@@ -159,16 +169,16 @@ if (!$p_list) {
   if (isset($p_codeset)) {
     if ($p_type=='json') {
       if (isset($p_code)) {
-        echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi/".$p_codeset."_".$p_code);
+        echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi/".$p_codeset."_".$p_code, false, $request_headers);
       } else {
-        echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi");
+        echo file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/json/".$p_codeset."/koodi", false, $request_headers);
       }
     }
     else {
       if (isset($p_code)) {
-        $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi/".$p_codeset."_".$p_code);
+        $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi/".$p_codeset."_".$p_code, false, $request_headers);
       } else {
-        $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi");
+        $str = file_get_contents("https://".$p_test."virkailija.opintopolku.fi/koodisto-service/rest/".$p_codeset."/koodi", false, $request_headers);
       }
       if ($p_showhtml) {
         $xml = simplexml_load_string($str);
@@ -193,7 +203,7 @@ if($p_showhtml) {
 
 <div class="row">
 <div class="col-xs-12 text-center">
-<span class="color3">&copy; <a href="//rapida.fi">Rapida</a> 2017</span>
+<span class="color3">&copy; <a href="//rapida.fi">Rapida</a> 2017, 2020</span>
 </div>
 </div>
 
