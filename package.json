@@ -24,6 +24,6 @@
     "bootstrap-css-only": "3.3.7",
     "clipboard": "1.7.1",
     "font-awesome": "4.1.0",
-    "ui-select": "0.14.1"
+    "ui-select": "0.19.8"
   }
 }

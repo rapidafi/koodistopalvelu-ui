@@ -1253,9 +1253,9 @@ uglify-js@~3.3.0:
     commander "~2.15.0"
     source-map "~0.6.1"
 
-ui-select@0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/ui-select/-/ui-select-0.14.1.tgz#759f79bdca98f7dc63798bfa2cfb5bffd388ce12"
+ui-select@0.19.8:
+  version "0.19.8"
+  resolved "https://registry.yarnpkg.com/ui-select/-/ui-select-0.19.8.tgz#74860848a7fd8bc494d9856d2f62776ea98637c1"
 
 underscore.string@~3.3.4:
   version "3.3.5"
