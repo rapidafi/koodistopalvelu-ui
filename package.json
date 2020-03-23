@@ -24,6 +24,9 @@
     "bootstrap-css-only": "3.3.7",
     "clipboard": "1.7.1",
     "font-awesome": "4.1.0",
+    "js-yaml": "3.13.1",
+    "lodash": "4.17.12",
+    "minimist": "1.2.2",
     "ui-select": "0.19.8"
   }
 }
