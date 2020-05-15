@@ -100,7 +100,7 @@
       </button>
     </div>
     <div class="hidden-xs col-sm-10 text-center">
-      <span class="fa fa-cog fa-spin fa-3x" data-ng-show="koodistoLataa || luokitusLataa"></span>
+      <i class="fa fa-cog fa-spin fa-3x" data-ng-show="koodistoLataa || luokitusLataa"></i>
     </div>
     <!-- ei uutta row:ta, tai edes col:ia jotta taulukko on sisaruksena kopiointipainikkeelle! uusi div tiputtaa uudeksi riviksi -->
     <table width="96%" class="table table-striped table-condensed" id="copyarea">
@@ -111,35 +111,35 @@
         </th>
         <th style="width:10%" data-ng-click="koodiOrderReverse=!(koodiOrder=='arvo'?koodiOrderReverse:true); koodiOrder='arvo'">
           Koodi
-          <span class="fa fa-sort-down" data-ng-show="koodiOrder=='arvo' && !(koodiOrderReverse)"></span>
-          <span class="fa fa-sort-up" data-ng-show="koodiOrder=='arvo' && (koodiOrderReverse)"></span>
+          <i class="fa fa-sort-down" data-ng-show="koodiOrder=='arvo' && !(koodiOrderReverse)"></i>
+          <i class="fa fa-sort-up" data-ng-show="koodiOrder=='arvo' && (koodiOrderReverse)"></i>
         </th>
         <th style="width:35%" data-ng-click="koodiOrderReverse=!(koodiOrder=='selite'?koodiOrderReverse:true); koodiOrder='selite'">
           Selite
-          <span class="fa fa-sort-down" data-ng-show="koodiOrder=='selite' && !(koodiOrderReverse)"></span>
-          <span class="fa fa-sort-up" data-ng-show="koodiOrder=='selite' && (koodiOrderReverse)"></span>
+          <i class="fa fa-sort-down" data-ng-show="koodiOrder=='selite' && !(koodiOrderReverse)"></i>
+          <i class="fa fa-sort-up" data-ng-show="koodiOrder=='selite' && (koodiOrderReverse)"></i>
         </th>
         <th style="width:8%" data-ng-click="koodiOrderReverse=!(koodiOrder=='alku'?koodiOrderReverse:true); koodiOrder='alku'">
           Alku
-          <span class="fa fa-sort-down" data-ng-show="koodiOrder=='alku' && !(koodiOrderReverse)"></span>
-          <span class="fa fa-sort-up" data-ng-show="koodiOrder=='alku' && (koodiOrderReverse)"></span>
+          <i class="fa fa-sort-down" data-ng-show="koodiOrder=='alku' && !(koodiOrderReverse)"></i>
+          <i class="fa fa-sort-up" data-ng-show="koodiOrder=='alku' && (koodiOrderReverse)"></i>
         </th>
         <th style="width:8%" data-ng-click="koodiOrderReverse=!(koodiOrder=='loppu'?koodiOrderReverse:true); koodiOrder='loppu'">
           Loppu
-          <span class="fa fa-sort-down" data-ng-show="koodiOrder=='loppu' && !(koodiOrderReverse)"></span>
-          <span class="fa fa-sort-up" data-ng-show="koodiOrder=='loppu' && (koodiOrderReverse)"></span>
+          <i class="fa fa-sort-down" data-ng-show="koodiOrder=='loppu' && !(koodiOrderReverse)"></i>
+          <i class="fa fa-sort-up" data-ng-show="koodiOrder=='loppu' && (koodiOrderReverse)"></i>
         </th>
         <th style="width:9%;" data-ng-show="koodiLuokitus && !koodistoLataa"
          data-ng-click="koodiOrderReverse=!(koodiOrder=='luokitus'?koodiOrderReverse:true); koodiOrder='luokitus'">
           Luokitus
-          <span class="fa fa-sort-down" data-ng-show="koodiOrder=='luokitus' && !(koodiOrderReverse)"></span>
-          <span class="fa fa-sort-up" data-ng-show="koodiOrder=='luokitus' && (koodiOrderReverse)"></span>
+          <i class="fa fa-sort-down" data-ng-show="koodiOrder=='luokitus' && !(koodiOrderReverse)"></i>
+          <i class="fa fa-sort-up" data-ng-show="koodiOrder=='luokitus' && (koodiOrderReverse)"></i>
         </th>
         <th style="width:30%;" data-ng-show="koodiLuokitus && !koodistoLataa"
          data-ng-click="koodiOrderReverse=!(koodiOrder=='luokitusselite'?koodiOrderReverse:true); koodiOrder='luokitusselite'">
           Luokitusselite
-          <span class="fa fa-sort-down" data-ng-show="koodiOrder=='luokitusselite' && !(koodiOrderReverse)"></span>
-          <span class="fa fa-sort-up" data-ng-show="koodiOrder=='luokitusselite' && (koodiOrderReverse)"></span>
+          <i class="fa fa-sort-down" data-ng-show="koodiOrder=='luokitusselite' && !(koodiOrderReverse)"></i>
+          <i class="fa fa-sort-up" data-ng-show="koodiOrder=='luokitusselite' && (koodiOrderReverse)"></i>
         </th>
       </tr>
       <tr>
@@ -175,7 +175,7 @@
   <div class="col-xs-4 text-left">
   </div>
   <div class="col-xs-4 text-center">
-    <span class="color3">&copy; <a href="//rapida.fi">Rapida</a> 2017</span>
+    <span class="color3">&copy; 2017,2020 <a href="//rapida.fi">Rapida</a></span>
   </div>
   <div class="col-xs-4 text-right">
   </div>

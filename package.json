@@ -6,16 +6,16 @@
   "author": "Rapida",
   "license": "MIT",
   "devDependencies": {
-    "grunt": "^1.0.3",
-    "grunt-contrib-clean": "^1.1.0",
+    "grunt": "^1.1.0",
+    "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^2.2.1",
-    "grunt-contrib-uglify": "^3.3.0",
+    "grunt-contrib-cssmin": "^3.0.0",
+    "grunt-contrib-uglify": "^4.0.1",
     "grunt-google-fonts": "^0.5.0",
     "grunt-usemin": "^3.1.1",
-    "load-grunt-tasks": "^4.0.0",
-    "time-grunt": "^1.4.0"
+    "load-grunt-tasks": "^5.1.0",
+    "time-grunt": "^2.0.0"
   },
   "dependencies": {
     "angular": "1.7.9",
