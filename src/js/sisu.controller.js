@@ -165,10 +165,10 @@ koodiApp.controller('koodiController', function($scope,$http)
     $scope.baseuri='https://koodistopalvelu.fi/';
   }
   $scope.sourceuris = {
-    'sis-demo': $scope.baseuri+"api.php?uri=https://sis-helsinki.funidata.fi/kori/api",
+    'sis-demo': $scope.baseuri+"api.php?uri=https://sis-demo.funidata.fi/kori/api",
     'sis-helsinki': $scope.baseuri+"api.php?uri=https://sis-helsinki.funidata.fi/kori/api",
     'sis-aalto': $scope.baseuri+"api.php?uri=https://sis-aalto.funidata.fi/kori/api",
-    'sis-tut': $scope.baseuri+"api.php?uri=https://sis-tut.funidata.fi/kori/api",
+    'sis-tuni': $scope.baseuri+"api.php?uri=https://sis-tuni.funidata.fi/kori/api",
     'sis-jyu': $scope.baseuri+"api.php?uri=https://sis-jyu.funidata.fi/kori/api",
     'sis-lut': $scope.baseuri+"api.php?uri=https://sis-lut.funidata.fi/kori/api"
   };
