@@ -173,7 +173,7 @@ koodiApp.controller('koodiController', function($scope,$http)
     'sis-lut': $scope.baseuri+"api.php?uri=https://sis-lut.funidata.fi/kori/api",
     'sis-helsinki-test': $scope.baseuri+"api.php?uri=https://sis-helsinki-test.funidata.fi/kori/api",
     'sis-aalto-test': $scope.baseuri+"api.php?uri=https://sis-aalto-test.funidata.fi/kori/api",
-    'sis-tuni-text': $scope.baseuri+"api.php?uri=https://sis-tuni-test.funidata.fi/kori/api",
+    'sis-tuni-test': $scope.baseuri+"api.php?uri=https://sis-tuni-test.funidata.fi/kori/api",
     'sis-jyu-test': $scope.baseuri+"api.php?uri=https://sis-jyu-test.funidata.fi/kori/api",
     'sis-jyu-demo': $scope.baseuri+"api.php?uri=https://sis-jyu-demo.funidata.fi/kori/api",
     'sis-lut-test': $scope.baseuri+"api.php?uri=https://sis-lut-test.funidata.fi/kori/api"
