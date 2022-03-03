@@ -17,34 +17,6 @@ module.exports = function (grunt) {
         force: true
       }
     },
-    useminPrepare: {
-      html: [
-        srcDir+'/index.html',
-        srcDir+'/suomi.html',
-        srcDir+'/opintopolku.html',
-        srcDir+'/thl.html',
-        srcDir+'/sisu.html'
-      ],
-      options: {
-        dest: distDir,
-        flow: {
-          steps: {
-            'css': ['concat','cssmin'],
-            'js': ['concat','uglify']
-          },
-          post: {}
-        }
-      }
-    },
-    usemin: {
-      html: [
-        distDir+'/index.html',
-        distDir+'/suomi.html',
-        distDir+'/opintopolku.html',
-        distDir+'/thl.html',
-        distDir+'/sisu.html'
-      ]
-    },
     copy: {
       html: {
         expand: true,
@@ -128,12 +100,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean',
-    'useminPrepare',
-    'concat',
-    'uglify',
-    'cssmin',
     'copy',
-    'googlefonts',
-    'usemin'
+    'googlefonts'
   ]);
 };
